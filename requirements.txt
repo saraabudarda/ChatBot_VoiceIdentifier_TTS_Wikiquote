@@ -1,0 +1,31 @@
+# Core
+neo4j==5.15.0
+streamlit==1.29.0
+
+# NLP
+spacy==3.7.2
+langdetect==1.0.9
+
+# Data Processing
+lxml==5.1.0
+python-Levenshtein==0.23.0
+
+# Voice Modules
+# ASR (Automatic Speech Recognition)
+faster-whisper>=0.10.0
+
+# TTS (Text-to-Speech)
+TTS>=0.22.0
+soundfile>=0.12.0
+
+# Audio Processing
+numpy>=1.24.0
+torch>=2.0.0
+torchaudio>=2.0.0
+
+# Speaker Identification
+speechbrain>=0.5.0
+
+# Utilities
+python-dotenv==1.0.0
+pytest==7.4.3

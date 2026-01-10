@@ -1,0 +1,843 @@
+INFO:numexpr.utils:NumExpr defaulting to 10 threads.
+INFO:__main__:======================================================================
+INFO:__main__:FAST WIKIQUOTE INGESTION - OPTIMIZED FOR SPEED
+INFO:__main__:======================================================================
+INFO:__main__:Initializing parser...
+INFO:__main__:Connecting to Neo4j...
+INFO:src.database.neo4j_client:Connected to Neo4j at neo4j://127.0.0.1:7687
+INFO:__main__:Clearing database...
+WARNING:src.database.neo4j_client:Clearing database - all data will be deleted!
+INFO:src.database.neo4j_client:Database cleared
+INFO:__main__:Creating database schema...
+INFO:__main__:Starting FAST data processing...
+INFO:__main__:Skipping: NLP processing, heavy text cleaning, deduplication
+INFO:__main__:Batch size: 5000 (larger batches = faster)
+INFO:src.ingestion.xml_parser:Starting to parse /Users/sara/Desktop/wiki db/data/enwikiquote-20251220-pages-articles 2.xml
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 5,000 processed, 5,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 10,000 processed, 10,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 15,000 processed, 15,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 20,000 processed, 20,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 25,000 processed, 25,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 30,000 processed, 30,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 35,000 processed, 35,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 40,000 processed, 40,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 45,000 processed, 45,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 50,000 processed, 50,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 55,000 processed, 55,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 60,000 processed, 60,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 65,000 processed, 65,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 70,000 processed, 70,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 75,000 processed, 75,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 80,000 processed, 80,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 85,000 processed, 85,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 90,000 processed, 90,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 95,000 processed, 95,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 100,000 processed, 100,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 105,000 processed, 105,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 110,000 processed, 110,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 115,000 processed, 115,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 120,000 processed, 120,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 125,000 processed, 125,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 130,000 processed, 130,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 135,000 processed, 135,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 140,000 processed, 140,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 145,000 processed, 145,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 150,000 processed, 150,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 155,000 processed, 155,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 160,000 processed, 160,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 165,000 processed, 165,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 170,000 processed, 170,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 175,000 processed, 175,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 180,000 processed, 180,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 185,000 processed, 185,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 190,000 processed, 190,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 195,000 processed, 195,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 200,000 processed, 200,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 205,000 processed, 205,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 210,000 processed, 210,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 215,000 processed, 215,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 220,000 processed, 220,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 225,000 processed, 225,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 230,000 processed, 230,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 235,000 processed, 235,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 240,000 processed, 240,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 245,000 processed, 245,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 250,000 processed, 250,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 255,000 processed, 255,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 260,000 processed, 260,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 265,000 processed, 265,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 270,000 processed, 270,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 275,000 processed, 275,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 280,000 processed, 280,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 285,000 processed, 285,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 290,000 processed, 290,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 295,000 processed, 295,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 300,000 processed, 300,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 305,000 processed, 305,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 310,000 processed, 310,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 315,000 processed, 315,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 320,000 processed, 320,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 325,000 processed, 325,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 330,000 processed, 330,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 335,000 processed, 335,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 340,000 processed, 340,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 345,000 processed, 345,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 350,000 processed, 350,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 355,000 processed, 355,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 360,000 processed, 360,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 365,000 processed, 365,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 370,000 processed, 370,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 375,000 processed, 375,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 380,000 processed, 380,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 385,000 processed, 385,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 390,000 processed, 390,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 395,000 processed, 395,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 400,000 processed, 400,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 405,000 processed, 405,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 410,000 processed, 410,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 415,000 processed, 415,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 420,000 processed, 420,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 425,000 processed, 425,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 430,000 processed, 430,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 435,000 processed, 435,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 440,000 processed, 440,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 445,000 processed, 445,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 450,000 processed, 450,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 455,000 processed, 455,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 460,000 processed, 460,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 465,000 processed, 465,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 470,000 processed, 470,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 475,000 processed, 475,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 480,000 processed, 480,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 485,000 processed, 485,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 490,000 processed, 490,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 495,000 processed, 495,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 500,000 processed, 500,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 505,000 processed, 505,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 510,000 processed, 510,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 515,000 processed, 515,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 520,000 processed, 520,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 525,000 processed, 525,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 530,000 processed, 530,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 535,000 processed, 535,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 540,000 processed, 540,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 545,000 processed, 545,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 550,000 processed, 550,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 555,000 processed, 555,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 560,000 processed, 560,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 565,000 processed, 565,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 570,000 processed, 570,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 575,000 processed, 575,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 580,000 processed, 580,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 585,000 processed, 585,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 590,000 processed, 590,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 595,000 processed, 595,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 600,000 processed, 600,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 605,000 processed, 605,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 610,000 processed, 610,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 615,000 processed, 615,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 620,000 processed, 620,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:635697, property size: 8897.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 630,000 processed, 625,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 635,000 processed, 630,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 640,000 processed, 635,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 645,000 processed, 640,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 650,000 processed, 645,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 655,000 processed, 650,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 660,000 processed, 655,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 665,000 processed, 660,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 670,000 processed, 665,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 675,000 processed, 670,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 680,000 processed, 675,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 685,000 processed, 680,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 690,000 processed, 685,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 695,000 processed, 690,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 700,000 processed, 695,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 705,000 processed, 700,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 710,000 processed, 705,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 715,000 processed, 710,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 720,000 processed, 715,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 725,000 processed, 720,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 730,000 processed, 725,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 735,000 processed, 730,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 740,000 processed, 735,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 745,000 processed, 740,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 750,000 processed, 745,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 755,000 processed, 750,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 760,000 processed, 755,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 765,000 processed, 760,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 770,000 processed, 765,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 775,000 processed, 770,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 780,000 processed, 775,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 785,000 processed, 780,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 790,000 processed, 785,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 795,000 processed, 790,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 800,000 processed, 795,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 805,000 processed, 800,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 810,000 processed, 805,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 815,000 processed, 810,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 820,000 processed, 815,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 825,000 processed, 820,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 830,000 processed, 825,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 835,000 processed, 830,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 840,000 processed, 835,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 845,000 processed, 840,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 850,000 processed, 845,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 855,000 processed, 850,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 860,000 processed, 855,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 865,000 processed, 860,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 870,000 processed, 865,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 875,000 processed, 870,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 880,000 processed, 875,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 885,000 processed, 880,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 890,000 processed, 885,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 895,000 processed, 890,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 900,000 processed, 895,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 905,000 processed, 900,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 910,000 processed, 905,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 915,000 processed, 910,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 920,000 processed, 915,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 925,000 processed, 920,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 930,000 processed, 925,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 935,000 processed, 930,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 940,000 processed, 935,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 945,000 processed, 940,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 950,000 processed, 945,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 955,000 processed, 950,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 960,000 processed, 955,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 965,000 processed, 960,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 970,000 processed, 965,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 975,000 processed, 970,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 980,000 processed, 975,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 985,000 processed, 980,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 990,000 processed, 985,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 995,000 processed, 990,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,000,000 processed, 995,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,005,000 processed, 1,000,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,010,000 processed, 1,005,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,015,000 processed, 1,010,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,020,000 processed, 1,015,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,025,000 processed, 1,020,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,030,000 processed, 1,025,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1057000, property size: 8454.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,040,000 processed, 1,030,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,045,000 processed, 1,035,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,050,000 processed, 1,040,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,055,000 processed, 1,045,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,060,000 processed, 1,050,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,065,000 processed, 1,055,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,070,000 processed, 1,060,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1093280, property size: 8850.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,080,000 processed, 1,065,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,085,000 processed, 1,070,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,090,000 processed, 1,075,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,095,000 processed, 1,080,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,100,000 processed, 1,085,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,105,000 processed, 1,090,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,110,000 processed, 1,095,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1131405, property size: 8370.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,120,000 processed, 1,100,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,125,000 processed, 1,105,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,130,000 processed, 1,110,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,135,000 processed, 1,115,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,140,000 processed, 1,120,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,145,000 processed, 1,125,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,150,000 processed, 1,130,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1168981, property size: 9295.}
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1168872, property size: 9195.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,165,000 processed, 1,135,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,170,000 processed, 1,140,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,175,000 processed, 1,145,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,180,000 processed, 1,150,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,185,000 processed, 1,155,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,190,000 processed, 1,160,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,195,000 processed, 1,165,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,200,000 processed, 1,170,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,205,000 processed, 1,175,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,210,000 processed, 1,180,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,215,000 processed, 1,185,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,220,000 processed, 1,190,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,225,000 processed, 1,195,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,230,000 processed, 1,200,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,235,000 processed, 1,205,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,240,000 processed, 1,210,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,245,000 processed, 1,215,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,250,000 processed, 1,220,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,255,000 processed, 1,225,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,260,000 processed, 1,230,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,265,000 processed, 1,235,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,270,000 processed, 1,240,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1288412, property size: 9643.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,280,000 processed, 1,245,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,285,000 processed, 1,250,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,290,000 processed, 1,255,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,295,000 processed, 1,260,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,300,000 processed, 1,265,000 inserted
+ERROR:__main__:Batch write error: {code: Neo.DatabaseError.Statement.ExecutionFailed} {message: Property value is too large to index, please see index documentation for limitations. Index: Index( id=17, name='index_3a826629', type='RANGE', schema=(:Quote {text}), indexProvider='range-1.0' ), element id: 4:112d94ac-19ad-434e-a93a-17fd96e443e9:1314454, property size: 15608.}
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,310,000 processed, 1,270,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,315,000 processed, 1,275,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,320,000 processed, 1,280,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,325,000 processed, 1,285,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,330,000 processed, 1,290,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,335,000 processed, 1,295,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,340,000 processed, 1,300,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,345,000 processed, 1,305,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,350,000 processed, 1,310,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,355,000 processed, 1,315,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,360,000 processed, 1,320,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,365,000 processed, 1,325,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,370,000 processed, 1,330,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,375,000 processed, 1,335,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,380,000 processed, 1,340,000 inserted
+INFO:src.database.neo4j_client:Processed 5000/5000 queries
+INFO:src.database.neo4j_client:Batch write complete: 5000 queries executed
+INFO:__main__:Progress: 1,385,000 processed, 1,345,000 inserted
+INFO:src.ingestion.xml_parser:Parsing complete. Processed 98188 pages, extracted 1551955 quotes
+INFO:src.database.neo4j_client:Batch write complete: 1046 queries executed
+INFO:__main__:======================================================================
+INFO:__main__:FAST INGESTION COMPLETE
+INFO:__main__:======================================================================
+INFO:__main__:Total quotes processed: 1,386,046
+INFO:__main__:Total quotes inserted: 1,346,046
+INFO:__main__:
+Database Statistics:
+INFO:__main__:  Quotes: 1,346,046
+INFO:__main__:  Authors: 0
+INFO:__main__:  Works: 655
+INFO:src.database.neo4j_client:Neo4j connection closed
