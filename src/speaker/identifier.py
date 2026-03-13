@@ -25,7 +25,7 @@ class SpeakerIdentifier:
         self,
         profile_manager: SpeakerProfileManager,
         embedding_extractor: Optional[VoiceEmbeddingExtractor] = None,
-        threshold: float = 0.75
+        threshold: float = 0.55
     ):
         """
         Initialize the speaker identifier.
@@ -193,7 +193,7 @@ def main():
     )
     
     profile_manager = SpeakerProfileManager(client)
-    identifier = SpeakerIdentifier(profile_manager, threshold=0.75)
+    identifier = SpeakerIdentifier(profile_manager, threshold=0.55)
     
     print("Testing Speaker Identifier\n")
     print(f"Threshold: {identifier.threshold}")

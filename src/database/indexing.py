@@ -70,23 +70,36 @@ class IndexManager:
     
     def search_quotes(self, query_text: str, limit: int = 10) -> List[Dict]:
         """
-        Search quotes using the full-text index.
+        Search quotes using the full-text index with quality filtering.
+        
+        Filters out metadata, citations, and low-quality entries.
         
         Args:
             query_text: Search query
             limit: Maximum number of results
             
         Returns:
-            List of matching quotes with metadata
+            List of high-quality matching quotes with metadata
         """
         query = f"""
         CALL db.index.fulltext.queryNodes($index_name, $query_text)
         YIELD node, score
-        MATCH (p)-[:HAS_QUOTE|SAID]->(node)
-        RETURN node.text AS quote,
-               p.name AS author,
-               score
+        WITH node, score
         ORDER BY score DESC
+        LIMIT $limit
+        MATCH (p)-[:HAS_QUOTE|SAID]->(node)
+        WHERE size(node.text) >= 80
+          AND NOT node.text =~ '.*\\(\\d{{4}}\\).*'
+          AND NOT node.text =~ '.*p\\. \\d+.*'
+          AND NOT node.text =~ '.*https?://.*'
+          AND NOT node.text STARTS WITH 'http'
+          AND NOT node.text CONTAINS '&c.'
+          AND NOT node.text =~ '.*No\\. (I|II|III|IV|V|VI|VII|VIII|IX|X).*'
+          AND NOT node.text =~ '.*published in.*'
+          AND NOT node.text =~ '.*Section \\d+.*'
+        WITH node.text AS quote, p.name AS author, score
+        ORDER BY score DESC
+        RETURN DISTINCT quote, author, score
         LIMIT $limit
         """
         

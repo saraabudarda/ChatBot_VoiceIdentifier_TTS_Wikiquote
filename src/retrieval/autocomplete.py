@@ -46,30 +46,66 @@ class QuoteAutocomplete:
         if not partial_quote or len(partial_quote) < 3:
             return []
         
-        # Search using full-text index
-        results = self.index_manager.search_quotes(partial_quote, limit=max_results)
+        # Fetch MORE results from database than requested (to ensure famous quotes aren't filtered out)
+        # We'll rank them and return the top max_results
+        fetch_limit = max(50, max_results * 5)  # Fetch at least 50 or 5x requested
         
+        # Search using full-text index
+        results = self.index_manager.search_quotes(partial_quote, limit=fetch_limit)
+
+        # Deduplicate — only remove exact (text + author) duplicates.
+        # Same quote text attributed to DIFFERENT authors = valid distinct results, keep both.
+        seen = set()
+        unique_results = []
+        for r in results:
+            text_key = r.get('quote', '').strip().lower()[:120]
+            author_key = r.get('author', '').strip().lower()
+            key = (text_key, author_key)
+            if text_key and key not in seen:
+                seen.add(key)
+                unique_results.append(r)
+        results = unique_results
+
         # Enhance results with ranking
         ranked_results = self._rank_results(partial_quote, results)
-        
-        return ranked_results
+
+        # Return only the top max_results after ranking
+        return ranked_results[:max_results]
     
     def find_by_author(self, author_name: str, limit: int = 10) -> List[Dict]:
         """
-        Find quotes by a specific author.
+        Find quotes by a specific author with quality filtering.
+        
+        Filters out:
+        - Short metadata entries (< 50 chars)
+        - Citations with years (1797)
+        - Page references (p. 338)
+        - URLs
+        - Incomplete text (&c.)
         
         Args:
             author_name: Name of the author
             limit: Maximum number of results
             
         Returns:
-            List of quotes by the author
+            List of high-quality quotes by the author
         """
         query = """
         MATCH (p:Person)-[:HAS_QUOTE|SAID]->(q:Quote)
         WHERE toLower(p.name) CONTAINS toLower($author_name)
+          AND size(q.text) >= 80
+          AND NOT q.text =~ '.*\\(\\d{4}\\).*'
+          AND NOT q.text =~ '.*p\\. \\d+.*'
+          AND NOT q.text =~ '.*https?://.*'
+          AND NOT q.text STARTS WITH 'http'
+          AND NOT q.text CONTAINS '&c.'
+          AND NOT q.text =~ '.*No\\. (I|II|III|IV|V|VI|VII|VIII|IX|X).*'
+          AND NOT q.text =~ '.*published in.*'
+          AND NOT q.text =~ '.*Section \\d+.*'
+          AND NOT q.text =~ '^[A-Z][a-z]+ [A-Z][a-z]+, .*'
         RETURN q.text AS quote,
                p.name AS author
+        ORDER BY size(q.text) DESC
         LIMIT $limit
         """
         
@@ -80,20 +116,31 @@ class QuoteAutocomplete:
     
     def find_by_work(self, work_title: str, limit: int = 10) -> List[Dict]:
         """
-        Find quotes from a specific work.
+        Find quotes from a specific work with quality filtering.
         
         Args:
             work_title: Title of the work
             limit: Maximum number of results
             
         Returns:
-            List of quotes from the work
+            List of high-quality quotes from the work
         """
         query = """
         MATCH (w:Work)-[:HAS_QUOTE]->(q:Quote)
         WHERE toLower(w.name) CONTAINS toLower($work_title)
+          AND size(q.text) >= 80
+          AND NOT q.text =~ '.*\\(\\d{4}\\).*'
+          AND NOT q.text =~ '.*p\\. \\d+.*'
+          AND NOT q.text =~ '.*https?://.*'
+          AND NOT q.text STARTS WITH 'http'
+          AND NOT q.text CONTAINS '&c.'
+          AND NOT q.text =~ '.*No\\. (I|II|III|IV|V|VI|VII|VIII|IX|X).*'
+          AND NOT q.text =~ '.*published in.*'
+          AND NOT q.text =~ '.*Section \\d+.*'
+          AND NOT q.text =~ '^[A-Z][a-z]+ [A-Z][a-z]+, .*'
         RETURN q.text AS quote,
                w.name AS author
+        ORDER BY size(q.text) DESC
         LIMIT $limit
         """
         
@@ -187,7 +234,31 @@ class QuoteAutocomplete:
                 length_score = 0.7
             
             # 2. Author quality boost
-            if author and author != 'Unknown' and len(author) > 2:
+            # List of famous authors/works that should be prioritized
+            famous_authors = {
+                'william shakespeare', 'shakespeare', 'hamlet', 'macbeth', 'romeo and juliet',
+                'albert einstein', 'einstein', 'mark twain', 'oscar wilde',
+                'aristotle', 'plato', 'socrates', 'confucius',
+                'martin luther king', 'nelson mandela', 'mahatma gandhi',
+                'winston churchill', 'abraham lincoln', 'benjamin franklin'
+            }
+            
+            famous_works = {
+                'hamlet', 'macbeth', 'romeo and juliet', 'othello', 'king lear',
+                'the prophet', 'the bible', 'the quran', 'the odyssey', 'the iliad'
+            }
+            
+            author_lower = author.lower() if author else ''
+            work_lower = work.lower() if work else ''
+            
+            # Check if author or work is famous
+            is_famous = any(famous in author_lower for famous in famous_authors) or \
+                       any(famous in work_lower for famous in famous_works)
+            
+            if is_famous:
+                # Famous author/work - MAJOR boost
+                author_boost = 4.0  # Increased to prioritize famous quotes
+            elif author and author != 'Unknown' and len(author) > 2:
                 # Known author - boost significantly
                 author_boost = 1.3
             else:
@@ -203,11 +274,12 @@ class QuoteAutocomplete:
                 work_boost = 1.0
             
             # 4. Prefix match bonus (exact start match)
+            # Reduce prefix bonus to not overwhelm famous author boost
             if quote_lower.startswith(query_lower):
-                prefix_bonus = 1.5
+                prefix_bonus = 1.2  # Further reduced
             elif query_lower in quote_lower[:50]:
                 # Query appears in first 50 chars
-                prefix_bonus = 1.3
+                prefix_bonus = 1.1  # Further reduced
             else:
                 prefix_bonus = 1.0
             
@@ -222,11 +294,11 @@ class QuoteAutocomplete:
             
             # Calculate final score with weighted factors
             final_score = (
-                base_score * 0.4 +          # Full-text relevance (40%)
-                length_score * 0.2 +         # Length preference (20%)
-                author_boost * 0.15 +        # Author quality (15%)
+                base_score * 0.2 +          # Full-text relevance (20%)
+                length_score * 0.1 +         # Length preference (10%)
+                author_boost * 0.5 +         # Author quality (50%, MAJOR boost for famous)
                 work_boost * 0.1 +           # Work attribution (10%)
-                coverage_score * 0.15        # Query coverage (15%)
+                coverage_score * 0.1         # Query coverage (10%)
             ) * prefix_bonus                 # Prefix match multiplier
             
             result['final_score'] = final_score
@@ -236,7 +308,8 @@ class QuoteAutocomplete:
                 'author': author_boost,
                 'work': work_boost,
                 'prefix': prefix_bonus,
-                'coverage': coverage_score
+                'coverage': coverage_score,
+                'is_famous': is_famous
             }
         
         # Sort by final score

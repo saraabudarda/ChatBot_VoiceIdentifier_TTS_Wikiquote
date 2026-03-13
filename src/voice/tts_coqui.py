@@ -24,6 +24,14 @@ class TTSCoqui:
     - Voice personalization
     """
     
+    # Voice gender to model speaker mapping
+    VOICE_GENDER_MAP = {
+        'male': 'male',
+        'female': 'female',
+        'neutral': 'default',
+        'default': 'default'
+    }
+    
     def __init__(self, model_name: str = 'tts_models/en/ljspeech/tacotron2-DDC'):
         """
         Initialize the TTS module.
@@ -46,12 +54,74 @@ class TTSCoqui:
                 logger.info(f"Loading TTS model: {self.model_name}")
                 self.model = TTS(model_name=self.model_name, progress_bar=False)
                 logger.info("TTS model loaded successfully")
+                
+                # Log available voices
+                if hasattr(self.model, 'speakers') and self.model.speakers:
+                    logger.info(f"Available voices: {self.model.speakers}")
+                else:
+                    logger.info("Single-speaker model loaded")
+                    
             except ImportError:
                 logger.error("Coqui TTS not installed. Install with: pip install TTS")
                 raise
             except Exception as e:
                 logger.error(f"Failed to load TTS model: {e}")
                 raise
+    
+    def _validate_voice_preference(self, voice_preferences: Optional[Dict]) -> Optional[str]:
+        """
+        Validate and map voice preference to actual voice ID.
+        
+        Priority:
+        1. voice_name (if not 'default') - explicit Voice Style selection
+        2. voice_gender - general Voice Gender preference
+        
+        Args:
+            voice_preferences: Voice configuration dict
+            
+        Returns:
+            Validated voice ID or None for default
+        """
+        if not voice_preferences:
+            return None
+        
+        # Priority 1: voice_name (Voice Style) - if explicitly set
+        voice_name = voice_preferences.get('voice_name')
+        voice_gender = voice_preferences.get('voice_gender')
+        
+        # Map gender to voice
+        target_voice = None
+        
+        # Check voice_name first - if it's not 'default', use it
+        if voice_name and voice_name != 'default':
+            target_voice = voice_name
+            logger.info(f"Using explicit voice_name: '{target_voice}'")
+        # Otherwise fall back to voice_gender
+        elif voice_gender and voice_gender in self.VOICE_GENDER_MAP:
+            target_voice = self.VOICE_GENDER_MAP[voice_gender]
+            logger.info(f"Voice gender '{voice_gender}' mapped to '{target_voice}'")
+        
+        # Validate voice exists in model (for multi-speaker models)
+        if target_voice and hasattr(self.model, 'speakers') and self.model.speakers:
+            available_voices = list(self.model.speakers)
+            
+            # Try exact match
+            if target_voice in available_voices:
+                logger.info(f"✓ Voice '{target_voice}' validated")
+                return target_voice
+            
+            # Try case-insensitive match
+            for voice in available_voices:
+                if voice.lower() == target_voice.lower():
+                    logger.info(f"✓ Voice '{voice}' matched (case-insensitive)")
+                    return voice
+            
+            # Voice not found, use default
+            logger.warning(f"Voice '{target_voice}' not in available voices: {available_voices}")
+            logger.warning("Falling back to default voice")
+            return None
+        
+        return target_voice
     
     def synthesize(
         self,
@@ -84,38 +154,38 @@ class TTSCoqui:
             output_path = str(self.output_dir / f"tts_{text_hash}.wav")
         
         logger.info(f"Synthesizing: '{text[:50]}...'")
+        logger.info(f"Voice preferences: {voice_preferences}")
         
         try:
-            # Get voice preferences
-            voice_prefs = voice_preferences or {}
-            speaker = voice_prefs.get('voice_name')
-            speed = voice_prefs.get('speed', 1.0)
+            # Validate and get voice
+            speaker = self._validate_voice_preference(voice_preferences)
+            speed = voice_preferences.get('speed', 1.0) if voice_preferences else 1.0
             
             # Check if model supports multi-speaker
             if hasattr(self.model, 'speakers') and self.model.speakers and speaker:
-                # Multi-speaker model
-                if speaker in self.model.speakers:
-                    self.model.tts_to_file(
-                        text=text,
-                        file_path=output_path,
-                        speaker=speaker
-                    )
-                else:
-                    logger.warning(f"Speaker '{speaker}' not found. Using default.")
-                    self.model.tts_to_file(text=text, file_path=output_path)
+                # Multi-speaker model with specific speaker
+                logger.info(f"Using multi-speaker synthesis with speaker: {speaker}")
+                self.model.tts_to_file(
+                    text=text,
+                    file_path=output_path,
+                    speaker=speaker
+                )
             else:
-                # Single-speaker model
+                # Single-speaker model or default voice
+                logger.info("Using single-speaker synthesis (default voice)")
                 self.model.tts_to_file(text=text, file_path=output_path)
             
             # Apply speed adjustment if needed
             if speed != 1.0:
                 output_path = self._adjust_speed(output_path, speed)
             
-            logger.info(f"Audio saved to: {output_path}")
+            logger.info(f"✓ Audio saved to: {output_path}")
             return output_path
             
         except Exception as e:
             logger.error(f"Synthesis failed: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             raise
     
     def _adjust_speed(self, audio_path: str, speed: float) -> str:

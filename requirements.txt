@@ -17,6 +17,8 @@ faster-whisper>=0.10.0
 # TTS (Text-to-Speech)
 TTS>=0.22.0
 soundfile>=0.12.0
+gtts>=2.5.0          # lightweight Google TTS for personalized previews
+pyttsx3>=2.90        # system TTS for male voice preview (offline)
 
 # Audio Processing
 numpy>=1.24.0

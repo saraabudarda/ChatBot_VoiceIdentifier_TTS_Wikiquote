@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import config
 from src.database.neo4j_client import Neo4jClient
 from src.retrieval.autocomplete import QuoteAutocomplete
-from src.chatbot.intent_recognizer import IntentRecognizer, Intent
+from src.chatbot.simple_router import SimpleRouter, RouteType
 from src.chatbot.response_generator import ResponseGenerator
 
 
@@ -120,6 +120,12 @@ def get_intent_recognizer():
 
 
 @st.cache_resource
+def get_simple_router():
+    """Initialize and cache the simple router."""
+    return SimpleRouter()
+
+
+@st.cache_resource
 def get_response_generator():
     """Initialize and cache the response generator."""
     return ResponseGenerator()
@@ -146,7 +152,7 @@ def sidebar():
         # Navigation
         page = st.radio(
             "Navigation",
-            ["🤖 Chatbot & Search", "🎙️ Voice Chat", "🎤 Speaker Identification", "🔊 Text-to-Speech", "📊 Statistics"],
+            ["🤖 Chatbot & Search", "🎤 Speaker Identification", "🔊 Text-to-Speech", "🎙️ Voice Chat"],
             label_visibility="collapsed"
         )
         
@@ -187,7 +193,7 @@ def chatbot_page():
     # Get components
     client = get_database_client()
     autocomplete = get_autocomplete_engine(client)
-    intent_recognizer = get_intent_recognizer()
+    router = get_simple_router()
     response_generator = get_response_generator()
     
     # Example queries
@@ -309,44 +315,20 @@ def chatbot_page():
         # Process query
         with st.chat_message("assistant"):
             with st.spinner("Searching..."):
-                # Recognize intent
-                intent_result = intent_recognizer.recognize(prompt)
-                intent = intent_result['intent']
-                entities = intent_result['entities']
+                # Use simple router
+                route_type, clarification, metadata = router.route(prompt)
                 
-                # Query database based on intent
-                results = []
-                
-                if intent == Intent.QUOTE_COMPLETION:
-                    partial_quote = entities.get('partial_quote', prompt)
-                    results = autocomplete.complete_quote(partial_quote, max_results=5)
-                
-                elif intent == Intent.QUOTE_ATTRIBUTION:
-                    quote = entities.get('quote', prompt)
-                    results = autocomplete.complete_quote(quote, max_results=1)
-                
-                elif intent == Intent.FIND_BY_AUTHOR:
-                    author = entities.get('author', '')
-                    results = autocomplete.find_by_author(author, limit=5)
-                
-                elif intent == Intent.FIND_BY_WORK:
-                    work = entities.get('work', '')
-                    results = autocomplete.find_by_work(work, limit=5)
-                
-                elif intent == Intent.RANDOM_QUOTE:
-                    results = autocomplete.get_random_quotes(count=1)
-                
-                elif intent == Intent.QUOTE_RECOMMENDATION:
-                    topic = entities.get('topic', '')
-                    results = autocomplete.complete_quote(topic, max_results=5)
-                
+                # Handle clarification
+                if route_type == RouteType.CLARIFICATION:
+                    response = clarification
+                    st.markdown(response)
                 else:
-                    # General search
+                    # Route to autocomplete (default for all queries)
                     results = autocomplete.complete_quote(prompt, max_results=5)
-                
-                # Generate response
-                response = response_generator.generate(intent, results, entities)
-                st.markdown(response)
+                    
+                    # Generate response with anti-hallucination rules
+                    response = response_generator.generate(None, results, metadata)
+                    st.markdown(response)
                 
                 # Add assistant message
                 st.session_state.messages.append({"role": "assistant", "content": response})
@@ -366,18 +348,31 @@ def speaker_id_page():
     # Initialize speaker components (lazy loading)
     if 'speaker_manager' not in st.session_state:
         try:
-            from src.speaker import SpeakerProfileManager, VoiceEmbeddingExtractor, SpeakerIdentifier
-            st.session_state.speaker_manager = SpeakerProfileManager(client)
-            st.session_state.embedding_extractor = VoiceEmbeddingExtractor()
-            st.session_state.speaker_identifier = SpeakerIdentifier(
-                st.session_state.speaker_manager,
-                st.session_state.embedding_extractor,
-                threshold=0.75
-            )
+            with st.spinner("Loading speaker identification models..."):
+                from src.speaker import SpeakerProfileManager, VoiceEmbeddingExtractor, SpeakerIdentifier
+                
+                st.session_state.speaker_manager = SpeakerProfileManager(client)
+                st.session_state.embedding_extractor = VoiceEmbeddingExtractor()
+                st.session_state.speaker_identifier = SpeakerIdentifier(
+                    st.session_state.speaker_manager,
+                    st.session_state.embedding_extractor,
+                    threshold=0.55
+                )
+                
+                st.success("✅ Speaker identification models loaded!")
+                
         except Exception as e:
-            st.error(f"Failed to initialize speaker components: {e}")
-            st.info("Make sure all dependencies are installed: `pip install speechbrain librosa soundfile`")
+            st.error(f"❌ Failed to initialize speaker components: {e}")
+            st.info("💡 Install dependencies: `pip install speechbrain librosa soundfile`")
+            import traceback
+            with st.expander("Error Details"):
+                st.code(traceback.format_exc())
             return
+    
+    # Verify all components are initialized
+    if 'speaker_identifier' not in st.session_state:
+        st.error("❌ Speaker identifier not initialized. Please refresh the page.") 
+        return
     
     # Tabs for different functions
     tab1, tab2, tab3 = st.tabs(["👤 Enroll Speaker", "🔍 Identify Speaker", "📋 Manage Profiles"])
@@ -503,6 +498,11 @@ def speaker_id_page():
                             import io
                             import soundfile as sf
                             
+                            # Ensure speaker_identifier is initialized
+                            if 'speaker_identifier' not in st.session_state:
+                                st.error("❌ Speaker identifier not initialized. Please refresh the page.")
+                                st.stop()
+                            
                             # Export AudioSegment to WAV bytes
                             wav_io = io.BytesIO()
                             audio_bytes.export(wav_io, format="wav")
@@ -541,7 +541,7 @@ def speaker_id_page():
             st.markdown(f"**Total Speakers:** {len(speakers)}")
             
             for speaker in speakers:
-                with st.expander(f"👤 {speaker['name']} ({speaker['speaker_id']})"):
+                with st.expander(f"👤 {speaker['name']}"):
                     col1, col2 = st.columns([3, 1])
                     
                     with col1:
@@ -561,210 +561,362 @@ def speaker_id_page():
 def voice_chat_page():
     """Render the voice chat page with full voice interaction."""
     st.markdown('<div class="main-header">🎙️ Voice Chat</div>', unsafe_allow_html=True)
-    
+
     if not st.session_state.db_connected:
         st.error("⚠️ Database not connected. Please check your Neo4j connection.")
         return
-    
+
     st.markdown("""
     Speak your query and get a personalized audio response! The system will:
     1. 🎤 Transcribe your speech
     2. 👤 Identify who you are
     3. 🔍 Search for relevant quotes
-    4. 🔊 Respond with personalized TTS
+    4. 🔊 Respond with **your personalized voice**
     """)
-    
-    # Initialize voice components (lazy loading)
-    if 'voice_orchestrator' not in st.session_state:
-        try:
-            from src.voice import ASRWhisper, TTSCoqui, TTSManager
-            from src.voice.orchestrator import VoiceOrchestrator
-            from src.speaker import SpeakerProfileManager, VoiceEmbeddingExtractor, SpeakerIdentifier
-            
-            client = get_database_client()
-            intent_recognizer = get_intent_recognizer()
-            response_generator = get_response_generator()
-            
-            # Initialize components
-            with st.spinner("Loading voice models... (this may take a minute)"):
-                asr = ASRWhisper(model_size='tiny')  # Use tiny for faster loading
-                speaker_manager = SpeakerProfileManager(client)
-                embedding_extractor = VoiceEmbeddingExtractor()
-                speaker_identifier = SpeakerIdentifier(speaker_manager, embedding_extractor, threshold=0.75)
-                tts_engine = TTSCoqui()
-                tts_manager = TTSManager(tts_engine, speaker_manager)
-                
-                # Create orchestrator
-                st.session_state.voice_orchestrator = VoiceOrchestrator(
-                    asr_module=asr,
-                    speaker_identifier=speaker_identifier,
-                    intent_recognizer=intent_recognizer,
-                    response_generator=response_generator,
-                    tts_manager=tts_manager
-                )
-                
-                st.session_state.voice_components_loaded = True
-                st.success("✅ Voice models loaded!")
-        except Exception as e:
-            st.error(f"Failed to initialize voice components: {e}")
-            st.info("Make sure all dependencies are installed: `pip install faster-whisper TTS speechbrain`")
-            return
-    
-    st.markdown("---")
-    
-    # Audio input section
-    st.markdown("### 🎤 Audio Input")
-    
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        uploaded_audio = st.file_uploader(
-            "Upload audio file",
-            type=['wav', 'mp3', 'ogg', 'm4a'],
-            help="Upload a voice query (e.g., 'Who said to be or not to be?')"
-        )
-    
-    with col2:
-        st.markdown("**Or record:**")
-        try:
-            from audiorecorder import audiorecorder
-            audio_bytes = audiorecorder(
-                start_prompt="🎤 Start Recording",
-                stop_prompt="⏹️ Stop Recording",
-                pause_prompt="⏸️ Pause",
-                key="voice_chat_recorder"
-            )
-        except ImportError:
-            st.info("Install: `pip install streamlit-audiorecorder`")
-            audio_bytes = None
-    
-    # Process button
-    if uploaded_audio or audio_bytes:
-        if st.button("🚀 Process Voice Query", type="primary", use_container_width=True):
-            # Save audio to temp file
-            import tempfile
-            import os
-            
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as tmp:
-                if uploaded_audio:
-                    tmp.write(uploaded_audio.read())
-                elif audio_bytes:
-                    # Convert AudioSegment to WAV bytes
-                    import io
-                    wav_io = io.BytesIO()
-                    audio_bytes.export(wav_io, format="wav")
-                    tmp.write(wav_io.getvalue())
-                tmp_path = tmp.name
-            
+
+    # ── Load ASR + Speaker ID (lazy, cached in session_state) ─────────────
+    if 'vc_asr' not in st.session_state:
+        with st.spinner("Loading voice models (first time only)…"):
             try:
-                # Process through orchestrator
-                with st.spinner("Processing your voice query..."):
-                    result = st.session_state.voice_orchestrator.process_voice_query(tmp_path)
-                
-                # Display results
-                st.markdown("---")
-                st.markdown("### 📊 Processing Results")
-                
-                # Transcript
-                st.markdown("#### 1️⃣ Transcription")
+                from src.voice.asr_whisper import ASRWhisper
+                from src.speaker.profile_manager import SpeakerProfileManager
+                from src.speaker.embedding_extractor import VoiceEmbeddingExtractor
+                from src.speaker.identifier import SpeakerIdentifier
+
+                client = get_database_client()
+                st.session_state.vc_asr = ASRWhisper(model_size='tiny')
+                spk_mgr = SpeakerProfileManager(client)
+                emb_ext = VoiceEmbeddingExtractor()
+                st.session_state.vc_speaker_id = SpeakerIdentifier(spk_mgr, emb_ext, threshold=0.55)
+                st.session_state.vc_speaker_mgr = spk_mgr
+                st.success("✅ Voice models ready!")
+            except Exception as e:
+                st.error(f"Failed to initialize voice components: {e}")
+                st.info("Make sure all dependencies are installed: `pip install faster-whisper speechbrain`")
+                return
+
+    st.markdown("---")
+
+
+    audio_input_bytes = None
+
+    # ── Live recorder (full-width so waveform has room) ───────────────────
+    st.markdown("**🎙️ Voice Recorder**")
+    try:
+        from audiorecorder import audiorecorder
+        recorded = audiorecorder(
+            start_prompt="⏺ Record",
+            stop_prompt="⏹ Stop Recording",
+            key="vc_recorder",
+            show_visualizer=True,   # live waveform canvas while recording
+        )
+        if recorded and len(recorded) > 0:
+            import io as _io
+            import numpy as np
+            wav_io = _io.BytesIO()
+            recorded.export(wav_io, format="wav")
+            audio_input_bytes = wav_io.getvalue()
+
+            # ── Waveform chart after recording ────────────────────────
+            try:
+                import soundfile as sf
+                wav_io.seek(0)
+                audio_arr, sr = sf.read(wav_io)
+                if audio_arr.ndim > 1:
+                    audio_arr = audio_arr.mean(axis=1)
+                step = max(1, len(audio_arr) // 600)
+                st.line_chart(audio_arr[::step], height=80, use_container_width=True)
+            except Exception:
+                pass
+
+            st.audio(audio_input_bytes, format="audio/wav")
+    except ImportError:
+        st.info("Install: `pip install streamlit-audiorecorder`")
+
+    st.markdown("**📂 Or upload an audio file:**")
+    uploaded = st.file_uploader(
+        "",
+        type=['wav', 'mp3', 'ogg', 'm4a'],
+        key="vc_upload",
+        label_visibility="collapsed"
+    )
+    if uploaded:
+        audio_input_bytes = uploaded.read()
+        st.audio(audio_input_bytes, format="audio/wav")
+
+    # ── Process ───────────────────────────────────────────────────────────
+    if audio_input_bytes and st.button("🚀 Find Quote", type="primary", use_container_width=True):
+        import tempfile, os, io
+
+        # Save audio to temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as tmp:
+            tmp.write(audio_input_bytes)
+            tmp_path = tmp.name
+
+        try:
+            # ── 1. Transcribe ──────────────────────────────────────────
+            with st.spinner("🎤 Transcribing…"):
+                asr_result = st.session_state.vc_asr.transcribe_file(tmp_path)
+                transcript = asr_result.get('text', '').strip()
+
+            st.markdown("---")
+            st.markdown("### 📊 Results")
+            st.markdown("#### 1️⃣ Transcription")
+            st.info(f'**You said:** "{transcript}"')
+            if not transcript:
+                st.warning("Could not transcribe audio. Please try again.")
+                return
+
+            # ── 2. Identify speaker ────────────────────────────────────
+            with st.spinner("👤 Identifying speaker…"):
+                speaker_id, confidence, speaker_data = \
+                    st.session_state.vc_speaker_id.identify_from_file(tmp_path)
+
+            st.markdown("#### 2️⃣ Speaker Recognition")
+            if speaker_id:
+                speaker_name = speaker_data.get('name', 'Unknown')
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.info(f"**You said:** \"{result['transcript']}\"")
+                    st.success(f"👤 **Identified:** {speaker_name}")
                 with col2:
-                    st.metric("Language", result['language'].upper())
-                
-                # Speaker identification
-                st.markdown("#### 2️⃣ Speaker Recognition")
-                if result['speaker_id']:
-                    col1, col2 = st.columns([3, 1])
-                    with col1:
-                        st.success(f"**Identified:** {result['speaker_name']}")
-                    with col2:
-                        st.metric("Confidence", f"{result['confidence']:.1%}")
+                    st.metric("Confidence", f"{confidence:.1%}")
+            else:
+                speaker_name = "Guest"
+                st.warning(f"Unknown speaker (best: {confidence:.1%}). "
+                           "Enroll in **Speaker Identification** for personalized responses.")
+
+            # ── 3. Smart search: detect author vs text query ──────────
+            with st.spinner("🔍 Searching quotes…"):
+                import re as _re
+                from src.retrieval.autocomplete import QuoteAutocomplete
+                client = get_database_client()
+                autocomplete = QuoteAutocomplete(client)
+
+                # Detect author-query patterns:
+                # "from Emily Brunter", "by Shakespeare", "quotes by Einstein",
+                # "find me a quote from Virgil", etc.
+                author_patterns = [
+                    r'\bby\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,3})',
+                    r'\bfrom\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,3})',
+                    r'\bof\s+([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+){0,3})',
+                ]
+                detected_author = None
+                for pat in author_patterns:
+                    m = _re.search(pat, transcript)
+                    if m:
+                        candidate = m.group(1).strip()
+                        # Skip generic words
+                        skip = {'the', 'a', 'an', 'this', 'that', 'my', 'your'}
+                        if candidate.lower() not in skip:
+                            detected_author = candidate
+                            break
+
+                if detected_author:
+                    results = autocomplete.find_by_author(detected_author, limit=5)
+                    search_mode = f"Author search: *{detected_author}*"
+                    if not results:
+                        # Fall back to full-text if author not found
+                        results = autocomplete.complete_quote(transcript, max_results=5)
+                        search_mode = "Full-text search (author not found)"
                 else:
-                    st.warning(f"Unknown speaker (best match: {result['confidence']:.1%})")
-                    st.caption("💡 Enroll in the Speaker Identification page to get personalized responses!")
-                
-                # Intent
-                st.markdown("#### 3️⃣ Query Understanding")
-                st.info(f"**Intent:** {result['intent']}")
-                
-                # Response
-                st.markdown("#### 4️⃣ Response")
-                st.markdown(f"**Answer:**\n\n{result['response_text']}")
-                
-                # Audio playback
-                st.markdown("#### 5️⃣ Audio Response")
-                if result['response_audio_path'] and os.path.exists(result['response_audio_path']):
-                    with open(result['response_audio_path'], 'rb') as audio_file:
-                        audio_data = audio_file.read()
-                        st.audio(audio_data, format='audio/wav')
-                    
-                    # Download button
-                    st.download_button(
-                        label="⬇️ Download Response Audio",
-                        data=audio_data,
-                        file_name="response.wav",
-                        mime="audio/wav"
-                    )
-                else:
-                    st.error("Audio generation failed")
-                
-                # Debug panel
-                with st.expander("🔍 Debug Information"):
-                    st.json({
-                        'transcript': result['transcript'],
-                        'language': result['language'],
-                        'speaker_id': result['speaker_id'],
-                        'speaker_name': result['speaker_name'],
-                        'confidence': f"{result['confidence']:.3f}",
-                        'intent': result['intent'],
-                        'audio_path': result['response_audio_path'],
-                        'error': result.get('error')
-                    })
-                
-            except Exception as e:
-                st.error(f"Processing failed: {e}")
-                import traceback
-                with st.expander("Error Details"):
-                    st.code(traceback.format_exc())
-            
-            finally:
-                # Cleanup temp file
+                    results = autocomplete.complete_quote(transcript, max_results=5)
+                    search_mode = "Full-text search"
+
+            st.markdown("#### 3️⃣ Best Matching Quote")
+            st.caption(f"🔎 {search_mode}")
+            if not results:
+                st.warning("No matching quote found. Try a different query.")
+                return
+
+            top = results[0]
+            quote_text = top.get('quote', '')
+            author = top.get('author', 'Unknown')
+            work = top.get('work', '')
+
+            try:
+                from src.chatbot.author_mapper import map_author
+                actual_author, _ = map_author(author, work)
+            except Exception:
+                actual_author = author
+
+            st.markdown(f'> "{quote_text}"')
+            st.markdown(f"**— {actual_author}**" + (f", *{work}*" if work and work != 'Unknown' else ""))
+
+            # ── 4. Load personalized voice preferences ─────────────────
+            voice_prefs = {'voice_gender': 'female', 'accent': 'auto', 'speed': 1.0}
+            if speaker_id:
                 try:
-                    os.unlink(tmp_path)
-                except:
+                    saved = st.session_state.vc_speaker_mgr.get_voice_preferences(speaker_id)
+                    if saved:
+                        voice_prefs = saved
+                except Exception:
                     pass
-    
-    # Example queries
+
+            # ── 5. Generate & play personalized TTS ───────────────────
+            st.markdown("#### 4️⃣ Personalized Audio Response")
+            gender = voice_prefs.get('voice_gender', 'female')
+            accent = voice_prefs.get('accent', 'auto')
+            speed  = float(voice_prefs.get('speed', 1.0))
+
+            with st.spinner(f"🔊 Generating audio ({gender} voice)…"):
+                audio_bytes_out, audio_fmt = _generate_preview_audio(
+                    text=quote_text,
+                    voice_gender=gender,
+                    accent=accent,
+                    speed=speed
+                )
+
+            st.audio(audio_bytes_out, format=audio_fmt)
+
+            if speaker_id:
+                st.caption(
+                    f"🎙️ Voice personalized for **{speaker_name}** "
+                    f"({gender}, speed {speed:.1f}x)"
+                )
+            else:
+                st.caption("💡 Log in via Speaker Identification to get your own personalized voice.")
+
+            # Download button
+            ext = 'wav' if 'wav' in audio_fmt else 'mp3'
+            st.download_button(
+                label="⬇️ Download Audio",
+                data=audio_bytes_out,
+                file_name=f"quote_response.{ext}",
+                mime=audio_fmt
+            )
+
+            # Debug
+            with st.expander("🔍 Debug Info"):
+                st.json({
+                    'transcript': transcript,
+                    'speaker_id': speaker_id,
+                    'speaker_name': speaker_name,
+                    'confidence': f"{confidence:.3f}",
+                    'voice_preferences': voice_prefs,
+                    'quote_length': len(quote_text),
+                })
+
+        except Exception as e:
+            st.error(f"Processing failed: {e}")
+            import traceback
+            with st.expander("Error Details"):
+                st.code(traceback.format_exc())
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                pass
+
+    # ── Example queries ───────────────────────────────────────────────────
     st.markdown("---")
     with st.expander("💡 Example Voice Queries"):
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown("**Quote Questions:**")
-            st.code("Who said 'to be or not to be'?")
-            st.code("Complete this quote: I think therefore")
+            st.markdown("**Quote Completion:**")
+            st.code("To be or not to be")
+            st.code("I think therefore")
             st.code("Tell me a quote about courage")
         with col2:
             st.markdown("**Author Queries:**")
             st.code("Show me quotes by Einstein")
             st.code("What did Shakespeare say?")
             st.code("Give me a random quote")
+    
+
+
+
+
+# ---------------------------------------------------------------------------
+# TTS preview helper — generates distinct audio per voice type
+# ---------------------------------------------------------------------------
+def _generate_preview_audio(text: str, voice_gender: str, accent: str, speed: float):
+    """
+    Generate preview audio bytes using gTTS (female/neutral/default)
+    or pyttsx3 (male system voice).
+
+    Returns:
+        Tuple of (audio_bytes: bytes, format_str: str) for st.audio()
+    """
+    import io, tempfile, os
+
+    if voice_gender == 'male':
+        # ── macOS `say` command — subprocess-based, safe inside Streamlit ───
+        try:
+            import subprocess, time
+
+            with tempfile.NamedTemporaryFile(suffix='.aiff', delete=False) as f:
+                tmp_path = f.name
+
+            # `say` voices: Daniel (British), Alex (US), Fred (US), Tom (US)
+            # Use Daniel as default male voice; adjust rate (words/min, default 175)
+            rate = int(175 * speed)
+            subprocess.run(
+                ['say', '-v', 'Daniel', '-r', str(rate), '-o', tmp_path, text],
+                check=True, capture_output=True, timeout=30
+            )
+
+            # Convert AIFF → WAV bytes with soundfile
+            import soundfile as sf
+            audio_data, sr = sf.read(tmp_path)
+            wav_buf = io.BytesIO()
+            sf.write(wav_buf, audio_data, sr, format='WAV')
+            wav_buf.seek(0)
+            os.unlink(tmp_path)
+            return wav_buf.read(), 'audio/wav'
+
+        except Exception as e:
+            # Fall through to gTTS Canadian accent as male fallback
+            import logging
+            logging.getLogger(__name__).warning(f"macOS say failed, using gTTS: {e}")
+
+    # ── gTTS: female / neutral / default ────────────────────────────────────
+    from gtts import gTTS
+
+    # Map gender → TLD accent for audible difference
+    tld_defaults = {
+        'female':  'com',        # US female
+        'neutral': 'co.uk',      # British neutral
+        'default': 'com.au',     # Australian
+        'male':    'ca',         # Canadian (gTTS fallback for male)
+    }
+    tld = accent if accent != 'auto' else tld_defaults.get(voice_gender, 'com')
+    slow = speed < 0.8           # gTTS supports slow=True only
+
+    # Generate MP3 with gTTS
+    mp3_buf_io = io.BytesIO()
+    gTTS(text=text, lang='en', tld=tld, slow=slow).write_to_fp(mp3_buf_io)
+    mp3_buf_io.seek(0)
+    mp3_buf = mp3_buf_io.read()
+
+    # Try converting MP3 → WAV via soundfile for guaranteed browser playback
+    # Falls back to raw MP3 with correct MIME type 'audio/mpeg' if unavailable
+    try:
+        import soundfile as sf, tempfile as tf2, os as os2
+        tmp_mp3 = tf2.NamedTemporaryFile(suffix='.mp3', delete=False)
+        tmp_mp3.write(mp3_buf)
+        tmp_mp3.close()
+        audio_data, sr = sf.read(tmp_mp3.name)
+        os2.unlink(tmp_mp3.name)
+        wav_out = io.BytesIO()
+        sf.write(wav_out, audio_data, sr, format='WAV')
+        wav_out.seek(0)
+        return wav_out.read(), 'audio/wav'
+    except Exception:
+        # soundfile cannot decode MP3 — return MP3 with correct MIME type
+        return mp3_buf, 'audio/mpeg'
 
 
 def tts_page():
     """Render the text-to-speech settings page."""
     st.markdown('<div class="main-header">🔊 TTS Settings</div>', unsafe_allow_html=True)
-    
+
     if not st.session_state.db_connected:
         st.error("⚠️ Database not connected. Please check your Neo4j connection.")
         return
-    
-    st.markdown("""
-    Configure personalized text-to-speech voice preferences for each speaker.
-    """)
-    
-    # Initialize components
+
+    st.markdown("Configure personalized text-to-speech voice preferences for each speaker.")
+
+    # ── Initialize speaker manager ─────────────────────────────────────────
     if 'speaker_manager' not in st.session_state:
         try:
             from src.speaker import SpeakerProfileManager
@@ -773,105 +925,146 @@ def tts_page():
         except Exception as e:
             st.error(f"Failed to initialize: {e}")
             return
-    
-    # Get all speakers
+
     speakers = st.session_state.speaker_manager.get_all_speakers()
-    
     if not speakers:
         st.info("No speakers enrolled yet. Go to the Speaker Identification page to enroll.")
         return
-    
+
+    # ── Speaker selector ───────────────────────────────────────────────────
     st.markdown("### 🎛️ Voice Preferences")
-    
-    # Speaker selection
     speaker_names = {s['speaker_id']: s['name'] for s in speakers}
     selected_speaker_id = st.selectbox(
         "Select Speaker",
         options=list(speaker_names.keys()),
-        format_func=lambda x: speaker_names[x]
+        format_func=lambda x: speaker_names[x],
     )
-    
-    if selected_speaker_id:
-        # Get current preferences
-        current_prefs = st.session_state.speaker_manager.get_voice_preferences(selected_speaker_id)
-        
-        st.markdown(f"**Configuring voice for:** {speaker_names[selected_speaker_id]}")
-        
-        # Voice settings
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            voice_name = st.selectbox(
-                "Voice Style",
-                options=['default', 'female', 'male', 'neutral'],
-                index=['default', 'female', 'male', 'neutral'].index(current_prefs.get('voice_name', 'default'))
-            )
-            
-            speed = st.slider(
-                "Speaking Speed",
-                min_value=0.5,
-                max_value=2.0,
-                value=current_prefs.get('speed', 1.0),
-                step=0.1,
-                help="1.0 = normal speed"
-            )
-        
-        with col2:
-            pitch = st.slider(
-                "Pitch Adjustment",
-                min_value=-10.0,
-                max_value=10.0,
-                value=current_prefs.get('pitch', 0.0),
-                step=0.5,
-                help="0 = no adjustment (Note: pitch adjustment may not be supported)"
-            )
-        
-        # Preview
-        st.markdown("---")
-        st.markdown("### 🎧 Preview")
-        
-        preview_text = st.text_input(
-            "Preview Text",
-            value="Hello! This is a preview of my personalized voice."
+
+    if not selected_speaker_id:
+        return
+
+    # Reload prefs when user switches speaker
+    current_prefs = st.session_state.speaker_manager.get_voice_preferences(selected_speaker_id)
+    speaker_label = speaker_names[selected_speaker_id]
+
+    st.markdown(f"**Configuring voice for:** {speaker_label}")
+
+    # ── Voice settings UI ──────────────────────────────────────────────────
+    GENDER_OPTIONS  = ['female', 'male', 'neutral', 'default']
+    ACCENT_OPTIONS  = {
+        'US English (female default)':   'com',
+        'British English (neutral)':     'co.uk',
+        'Australian English':            'com.au',
+        'Indian English':                'co.in',
+        'Canadian English':              'ca',
+        'Auto (match gender)':           'auto',
+    }
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        saved_gender = current_prefs.get('voice_gender', 'female')
+        if saved_gender not in GENDER_OPTIONS:
+            saved_gender = 'female'
+
+        voice_gender = st.selectbox(
+            "Voice Gender",
+            options=GENDER_OPTIONS,
+            index=GENDER_OPTIONS.index(saved_gender),
+            help="🎙️ Chooses the voice engine: Male uses your system voice; others use Google TTS.",
         )
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button("▶️ Preview Voice", use_container_width=True):
+
+        accent_labels = list(ACCENT_OPTIONS.keys())
+        saved_accent  = current_prefs.get('accent', 'auto')
+        saved_accent_label = next(
+            (k for k, v in ACCENT_OPTIONS.items() if v == saved_accent),
+            'Auto (match gender)'
+        )
+        accent_label = st.selectbox(
+            "Accent / Region",
+            options=accent_labels,
+            index=accent_labels.index(saved_accent_label),
+            help="Regional accent applied to the voice",
+        )
+        accent = ACCENT_OPTIONS[accent_label]
+
+        speed = st.slider(
+            "Speaking Speed",
+            min_value=0.5, max_value=2.0,
+            value=float(current_prefs.get('speed', 1.0)),
+            step=0.1,
+            help="1.0 = normal speed  |  < 0.8 activates slow mode for gTTS",
+        )
+
+    with col2:
+        pitch = st.slider(
+            "Pitch Adjustment",
+            min_value=-10.0, max_value=10.0,
+            value=float(current_prefs.get('pitch', 0.0)),
+            step=0.5,
+            help="Stored with preference (affects Coqui voices when available)",
+        )
+
+        # Show current saved voice as a summary card
+        st.markdown("**Currently saved voice:**")
+        saved_gender_disp  = current_prefs.get('voice_gender', '—')
+        saved_accent_disp  = current_prefs.get('accent', 'auto')
+        saved_accent_label_disp = next(
+            (k for k, v in ACCENT_OPTIONS.items() if v == saved_accent_disp),
+            saved_accent_disp
+        )
+        saved_speed_disp   = current_prefs.get('speed', 1.0)
+        st.info(
+            f"👤 **{speaker_label}**  \n"
+            f"🎙️ Gender: `{saved_gender_disp}`  \n"
+            f"🌍 Accent: `{saved_accent_label_disp}`  \n"
+            f"⚡ Speed: `{saved_speed_disp}x`"
+        )
+
+    # ── Preview section ────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 🎧 Preview")
+
+    preview_text = st.text_input(
+        "Preview Text",
+        value=f"Hello! I am {speaker_label} and this is my personalized voice.",
+        key=f"preview_text_{selected_speaker_id}",
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("▶️ Preview Voice", use_container_width=True):
+            with st.spinner("Generating preview audio..."):
                 try:
-                    from src.voice import TTSCoqui
-                    
-                    with st.spinner("Generating preview..."):
-                        tts = TTSCoqui()
-                        audio_path = tts.synthesize(
-                            text=preview_text,
-                            voice_preferences={
-                                'voice_name': voice_name,
-                                'speed': speed,
-                                'pitch': pitch
-                            }
-                        )
-                        
-                        with open(audio_path, 'rb') as f:
-                            st.audio(f.read(), format='audio/wav')
-                        
+                    audio_bytes, audio_fmt = _generate_preview_audio(
+                        text=preview_text,
+                        voice_gender=voice_gender,
+                        accent=accent,
+                        speed=speed,
+                    )
+                    st.audio(audio_bytes, format=audio_fmt)
                 except Exception as e:
                     st.error(f"Preview failed: {e}")
-        
-        with col2:
-            if st.button("💾 Save Preferences", type="primary", use_container_width=True):
-                new_prefs = {
-                    'voice_name': voice_name,
-                    'speed': speed,
-                    'pitch': pitch
-                }
-                
-                if st.session_state.speaker_manager.update_voice_preferences(selected_speaker_id, new_prefs):
-                    st.success("✅ Preferences saved!")
-                    st.balloons()
-                else:
-                    st.error("Failed to save preferences")
+                    import traceback
+                    with st.expander("Error Details"):
+                        st.code(traceback.format_exc())
+
+    with col2:
+        if st.button("💾 Save Preferences", type="primary", use_container_width=True):
+            new_prefs = {
+                'voice_gender': voice_gender,
+                'accent':       accent,
+                'speed':        speed,
+                'pitch':        pitch,
+                # keep voice_name for backward compat with Coqui
+                'voice_name':   voice_gender,
+            }
+            if st.session_state.speaker_manager.update_voice_preferences(selected_speaker_id, new_prefs):
+                st.success(f"✅ Voice preferences saved for **{speaker_label}**!")
+                st.balloons()
+            else:
+                st.error("Failed to save preferences")
 
 
 def statistics_page():
@@ -964,8 +1157,7 @@ def main():
         speaker_id_page()
     elif page == "🔊 Text-to-Speech":
         tts_page()
-    elif page == "📊 Statistics":
-        statistics_page()
+
 
 
 if __name__ == "__main__":
