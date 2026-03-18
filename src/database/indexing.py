@@ -87,19 +87,30 @@ class IndexManager:
         WITH node, score
         ORDER BY score DESC
         LIMIT $limit
-        MATCH (p)-[:HAS_QUOTE|SAID]->(node)
-        WHERE size(node.text) >= 80
+        
+        MATCH (node)
+        WHERE node.quality_bucket IN ['high_quality', 'review']
+          AND coalesce(node.is_canonical, true) = true
+          AND size(node.text) >= 40
           AND NOT node.text =~ '.*\\(\\d{{4}}\\).*'
           AND NOT node.text =~ '.*p\\. \\d+.*'
           AND NOT node.text =~ '.*https?://.*'
           AND NOT node.text STARTS WITH 'http'
           AND NOT node.text CONTAINS '&c.'
-          AND NOT node.text =~ '.*No\\. (I|II|III|IV|V|VI|VII|VIII|IX|X).*'
+          AND NOT node.text =~ '.*ASIN:.*'
           AND NOT node.text =~ '.*published in.*'
-          AND NOT node.text =~ '.*Section \\d+.*'
-        WITH node.text AS quote, p.name AS author, score
-        ORDER BY score DESC
-        RETURN DISTINCT quote, author, score
+        
+        OPTIONAL MATCH (p:Person)-[:SAID]->(node)
+        OPTIONAL MATCH (w:Work)-[:HAS_QUOTE]->(node)
+        
+        RETURN DISTINCT 
+            node.text AS quote, 
+            coalesce(p.name, 'Unknown') AS author, 
+            w.name AS work,
+            score,
+            node.quality_score AS quality_score,
+            node.quality_bucket AS quality_bucket
+        ORDER BY score DESC, quality_score DESC
         LIMIT $limit
         """
         

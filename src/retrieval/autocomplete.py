@@ -6,8 +6,18 @@ Neo4j full-text search with ranking and relevance scoring.
 """
 import logging
 from typing import List, Dict, Optional
+import unicodedata
+import difflib
 from ..database.neo4j_client import Neo4jClient
 from ..database.indexing import IndexManager
+
+def _normalize_name(name: str) -> str:
+    """Normalize author name (lowercase, remove accents, strip spaces)."""
+    if not name: return ""
+    name = name.lower()
+    name = ''.join(c for c in unicodedata.normalize('NFD', name) if unicodedata.category(c) != 'Mn')
+    return ' '.join(name.split())
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,6 +41,41 @@ class QuoteAutocomplete:
         """
         self.client = client
         self.index_manager = IndexManager(client, 'quote_search')
+        
+        # Load author cache for fast fuzzy matching
+        self._author_cache = {}
+        self._load_author_cache()
+    
+    def _load_author_cache(self):
+        query = "MATCH (p:Person) RETURN p.name AS name"
+        try:
+            results = self.client.execute_query(query)
+            for r in results:
+                name = r.get('name')
+                if name:
+                    self._author_cache[_normalize_name(name)] = name
+            logger.info(f"Loaded {len(self._author_cache)} authors into fuzzy match cache.")
+        except Exception as e:
+            logger.error(f"Failed to load author cache: {e}")
+
+    def _resolve_author_name(self, input_name: str) -> tuple[Optional[str], str, float]:
+        """Resolves author name using exact, normalized, then fuzzy matching."""
+        norm_input = _normalize_name(input_name)
+        if not norm_input:
+            return None, "none", 0.0
+            
+        # 1. Exact Normalized Match
+        if norm_input in self._author_cache:
+            return self._author_cache[norm_input], "exact_normalized", 1.0
+            
+        # 2. Fuzzy Match
+        matches = difflib.get_close_matches(norm_input, self._author_cache.keys(), n=1, cutoff=0.7)
+        if matches:
+            best_match_norm = matches[0]
+            conf = difflib.SequenceMatcher(None, norm_input, best_match_norm).ratio()
+            return self._author_cache[best_match_norm], "fuzzy", conf
+            
+        return None, "none", 0.0
     
     def complete_quote(self, partial_quote: str, max_results: int = 10) -> List[Dict]:
         """
@@ -90,57 +135,75 @@ class QuoteAutocomplete:
         Returns:
             List of high-quality quotes by the author
         """
+        # Step 1: Resolve the author name robustly
+        resolved_name, match_type, conf = self._resolve_author_name(author_name)
+        
+        if not resolved_name:
+            # If no author could be found even with fuzzy matching, fallback fails gracefully
+            logger.info(f"find_by_author: '{author_name}' could not be resolved.")
+            return []
+            
+        logger.info(f"find_by_author: Resolved '{author_name}' -> '{resolved_name}' ({match_type}, conf={conf:.2f})")
+        
+        # We now search for the EXACT resolved name in the database
         query = """
-        MATCH (p:Person)-[:HAS_QUOTE|SAID]->(q:Quote)
-        WHERE toLower(p.name) CONTAINS toLower($author_name)
-          AND size(q.text) >= 80
+        MATCH (p:Person {name: $resolved_name})-[:SAID]->(q:Quote)
+        WHERE q.quality_bucket IN ['high_quality', 'review']
+          AND coalesce(q.is_canonical, true) = true
+          AND size(q.text) >= 40
           AND NOT q.text =~ '.*\\(\\d{4}\\).*'
           AND NOT q.text =~ '.*p\\. \\d+.*'
           AND NOT q.text =~ '.*https?://.*'
           AND NOT q.text STARTS WITH 'http'
           AND NOT q.text CONTAINS '&c.'
-          AND NOT q.text =~ '.*No\\. (I|II|III|IV|V|VI|VII|VIII|IX|X).*'
+          AND NOT q.text =~ '.*ASIN:.*'
           AND NOT q.text =~ '.*published in.*'
-          AND NOT q.text =~ '.*Section \\d+.*'
-          AND NOT q.text =~ '^[A-Z][a-z]+ [A-Z][a-z]+, .*'
+        OPTIONAL MATCH (w:Work)-[:HAS_QUOTE]->(q)
         RETURN q.text AS quote,
-               p.name AS author
-        ORDER BY size(q.text) DESC
+               p.name AS author,
+               w.name AS work,
+               q.quality_score AS score
+        ORDER BY q.quality_score DESC, size(q.text) ASC
         LIMIT $limit
         """
         
-        params = {'author_name': author_name, 'limit': limit}
+        params = {'resolved_name': resolved_name, 'limit': limit}
         results = self.client.execute_query(query, params)
+        
+        # Inject our debug info
+        for r in results:
+            r['_debug_author_match'] = {
+                'original_query': author_name,
+                'interpreted_author': resolved_name,
+                'match_type': match_type,
+                'confidence': conf
+            }
         
         return results
     
     def find_by_work(self, work_title: str, limit: int = 10) -> List[Dict]:
         """
-        Find quotes from a specific work with quality filtering.
-        
-        Args:
-            work_title: Title of the work
-            limit: Maximum number of results
-            
-        Returns:
-            List of high-quality quotes from the work
+        Find quotes from a specific work using the new quality tiers.
         """
         query = """
         MATCH (w:Work)-[:HAS_QUOTE]->(q:Quote)
         WHERE toLower(w.name) CONTAINS toLower($work_title)
-          AND size(q.text) >= 80
+          AND q.quality_bucket IN ['high_quality', 'review']
+          AND coalesce(q.is_canonical, true) = true
+          AND size(q.text) >= 40
           AND NOT q.text =~ '.*\\(\\d{4}\\).*'
           AND NOT q.text =~ '.*p\\. \\d+.*'
           AND NOT q.text =~ '.*https?://.*'
           AND NOT q.text STARTS WITH 'http'
           AND NOT q.text CONTAINS '&c.'
-          AND NOT q.text =~ '.*No\\. (I|II|III|IV|V|VI|VII|VIII|IX|X).*'
+          AND NOT q.text =~ '.*ASIN:.*'
           AND NOT q.text =~ '.*published in.*'
-          AND NOT q.text =~ '.*Section \\d+.*'
-          AND NOT q.text =~ '^[A-Z][a-z]+ [A-Z][a-z]+, .*'
+        OPTIONAL MATCH (p:Person)-[:SAID]->(q)
         RETURN q.text AS quote,
-               w.name AS author
-        ORDER BY size(q.text) DESC
+               coalesce(p.name, 'Unknown') AS author,
+               w.name AS work,
+               q.quality_score AS score
+        ORDER BY q.quality_score DESC, size(q.text) ASC
         LIMIT $limit
         """
         
@@ -160,7 +223,9 @@ class QuoteAutocomplete:
             List of random quotes
         """
         query = """
-        MATCH (p)-[:HAS_QUOTE|SAID]->(q:Quote)
+        MATCH (p:Person)-[:SAID]->(q:Quote)
+        WHERE q.quality_bucket = 'high_quality'
+          AND coalesce(q.is_canonical, true) = true
         WITH q, p, rand() AS random
         ORDER BY random
         LIMIT $count

@@ -196,27 +196,52 @@ def chatbot_page():
     router = get_simple_router()
     response_generator = get_response_generator()
     
-    # Example queries
-    with st.expander("💡 Example Queries", expanded=False):
-        col1, col2 = st.columns(2)
+    # --- Smart Suggestions ---
+    st.markdown("### ✨ Smart Suggestions")
+    st.caption("Click any suggestion to instantly search top-tier quotes.")
+    
+    import random
+    
+    # Pre-defined high-quality suggestion pools
+    SUGGESTION_POOLS = {
+        "👤 Authors": ["Albert Einstein", "Oscar Wilde", "Mahatma Gandhi", "Mark Twain", "William Shakespeare", "Jane Austen", "Friedrich Nietzsche"],
+        "📚 Works": ["Hamlet", "The Odyssey", "Republic", "Frankenstein", "Leaves of Grass", "The Prophet"],
+        "🎭 Moods": ["Courage", "Loneliness", "Friendship", "Love and loss", "Inspirational", "Hope", "Sorrow"],
+        "💭 Topics": ["Philosophy", "Science", "Art", "Life and Death", "Time", "Justice", "Nature"]
+    }
+    
+    # Randomly select a few to display on initial load, cached to prevent jumping on every keystroke
+    if 'active_suggestions' not in st.session_state:
+        st.session_state.active_suggestions = {
+            cat: random.sample(items, 2) for cat, items in SUGGESTION_POOLS.items()
+        }
         
-        with col1:
-            st.markdown("**Quote Completion:**")
-            st.code("To be or not to be")
-            st.code("I think therefore I am")
-            
-            st.markdown("**Find by Author:**")
-            st.code("Quotes by Shakespeare")
-            st.code("Show me Einstein quotes")
+    def apply_suggestion(text):
+        """Callback to populate the search bar and trigger a rerun search."""
+        st.session_state.live_search = text
+        # Force the engine to recognize it as a new search even if clicked twice
+        st.session_state.last_search = "" 
         
-        with col2:
-            st.markdown("**Attribution:**")
-            st.code("Who said 'cogito ergo sum'?")
-            st.code("Author of 'to be or not to be'")
-            
-            st.markdown("**Other:**")
-            st.code("Random quote")
-            st.code("Quotes about courage")
+    cols = st.columns(4)
+    for i, (category, items) in enumerate(st.session_state.active_suggestions.items()):
+        with cols[i]:
+            st.markdown(f"**{category}**")
+            for item in items:
+                # Format the internal search query logically based on category
+                if category == "👤 Authors":
+                    search_term = f"by {item}"
+                elif category == "📚 Works":
+                    search_term = f"from {item}"
+                else:
+                    search_term = item
+                    
+                st.button(
+                    item, 
+                    key=f"sugg_{category}_{item}", 
+                    on_click=apply_suggestion, 
+                    args=(search_term,),
+                    use_container_width=True
+                )
     
     st.markdown("---")
     

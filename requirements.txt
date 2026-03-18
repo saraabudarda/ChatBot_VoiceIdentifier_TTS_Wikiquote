@@ -9,6 +9,9 @@ langdetect==1.0.9
 # Data Processing
 lxml==5.1.0
 python-Levenshtein==0.23.0
+datasketch>=1.6.4          # MinHash LSH for scalable fuzzy deduplication
+sentence-transformers>=2.7.0  # Phase 3: semantic embeddings
+faiss-cpu>=1.8.0              # Phase 3: approximate nearest-neighbor search
 
 # Voice Modules
 # ASR (Automatic Speech Recognition)
