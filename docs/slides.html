@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>WikiQuote NLP System — Academic Presentation</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root { --blue: #0ea5e9; --navy: #0c1a2e; --light: #f0f7ff; --border: #bae6fd; }
+.reveal { font-family: 'Inter', sans-serif; }
+.reveal h1,.reveal h2,.reveal h3 { font-family: 'Inter', sans-serif; color: var(--navy); text-transform: none; letter-spacing: -0.02em; }
+.reveal h1 { font-size: 2rem; font-weight: 900; }
+.reveal h2 { font-size: 1.5rem; font-weight: 800; border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 24px; }
+.reveal h3 { font-size: 1.1rem; font-weight: 700; color: var(--blue); }
+.reveal p, .reveal li { font-size: 0.82rem; color: #334e68; line-height: 1.65; }
+.reveal li { margin-bottom: 6px; }
+.reveal section { text-align: left; padding: 10px 40px; }
+.reveal .title-slide { text-align: center; }
+.reveal code { font-family: 'Fira Code', monospace; background: #e0f2fe; color: #0369a1; padding: 2px 7px; border-radius: 4px; font-size: 0.78rem; }
+.reveal pre code { font-size: 0.7rem; }
+
+/* Layout helpers */
+.cols { display: grid; gap: 24px; }
+.cols-2 { grid-template-columns: 1fr 1fr; }
+.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.box { background: #f0f7ff; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.box-accent { background: #fff; border-left: 4px solid var(--blue); border-radius: 0 10px 10px 0; padding: 12px 16px; }
+.badge { display: inline-block; background: #e0f2fe; color: #0369a1; border-radius: 20px; padding: 3px 12px; font-size: 0.72rem; font-weight: 600; margin: 3px 2px; }
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-amber { background: #fef9c3; color: #854d0e; }
+.badge-red   { background: #fee2e2; color: #991b1b; }
+.stat { text-align: center; }
+.stat-val { font-size: 2rem; font-weight: 900; color: var(--blue); display: block; line-height: 1; }
+.stat-lbl { font-size: 0.72rem; color: #627d98; display: block; margin-top: 4px; }
+.pipeline-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.pip-box { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 0.75rem; font-weight: 600; color: var(--navy); white-space: nowrap; }
+.pip-arrow { color: var(--blue); font-size: 1.1rem; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.section-num { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 4px; }
+table { font-size: 0.75rem; width: 100%; border-collapse: collapse; }
+th { background: var(--blue); color: #fff; padding: 8px 12px; font-weight: 600; text-align: left; }
+td { padding: 7px 12px; border-bottom: 1px solid #e0f2fe; color: #334e68; }
+tr:nth-child(even) td { background: #f8fbff; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ══════ SLIDE 1 — TITLE ══════ -->
+<section class="title-slide" data-background-gradient="linear-gradient(135deg,#f0f7ff 0%,#e0f2fe 100%)">
+  <div style="margin-bottom:16px;font-size:2.4rem">🎙️</div>
+  <h1 style="font-size:2.2rem;margin-bottom:12px">Multi-User Voice-Enabled<br/>Wikiquote NLP System</h1>
+  <p style="font-size:0.95rem;color:#0ea5e9;font-weight:600;margin-bottom:32px">Quote Retrieval · Speaker Identification · Personalized TTS</p>
+  <hr style="border:none;border-top:2px solid #bae6fd;margin:0 auto 28px;width:60%"/>
+  <p style="font-size:0.82rem;color:#334e68"><strong>Sara Abudarda</strong></p>
+  <p style="font-size:0.75rem;color:#627d98">Final Year Project · 2025 · github.com/saraabudarda</p>
+  <div class="tag-row" style="justify-content:center;margin-top:20px">
+    <span class="badge">Python 3.10</span>
+    <span class="badge">Neo4j</span>
+    <span class="badge">Whisper ASR</span>
+    <span class="badge">SpeechBrain</span>
+    <span class="badge">Streamlit</span>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 2 — OUTLINE ══════ -->
+<section data-background-color="#ffffff">
+  <div class="section-num">Overview</div>
+  <h2>Presentation Outline</h2>
+  <div class="cols cols-2">
+    <div>
+      <div class="box-accent" style="margin-bottom:10px"><strong>1. Motivation &amp; Objectives</strong><br/><span style="font-size:0.75rem;color:#627d98">Why this system? What problems does it solve?</span></div>
+      <div class="box-accent" style="margin-bottom:10px"><strong>2. System Architecture</strong><br/><span style="font-size:0.75rem;color:#627d98">High-level design and module breakdown</span></div>
+      <div class="box-accent" style="margin-bottom:10px"><strong>3. Data — Wikiquote Corpus</strong><br/><span style="font-size:0.75rem;color:#627d98">Ingestion, cleaning, Neo4j schema</span></div>
+      <div class="box-accent"><strong>4. ASR Module — Whisper</strong><br/><span style="font-size:0.75rem;color:#627d98">Transcription pipeline &amp; domain prompting</span></div>
+    </div>
+    <div>
+      <div class="box-accent" style="margin-bottom:10px"><strong>5. Speaker Identification</strong><br/><span style="font-size:0.75rem;color:#627d98">ECAPA-TDNN embeddings &amp; cosine similarity</span></div>
+      <div class="box-accent" style="margin-bottom:10px"><strong>6. Retrieval &amp; Intent Routing</strong><br/><span style="font-size:0.75rem;color:#627d98">Neo4j full-text search, ranking, NLP router</span></div>
+      <div class="box-accent" style="margin-bottom:10px"><strong>7. Text-to-Speech &amp; Personalization</strong><br/><span style="font-size:0.75rem;color:#627d98">gTTS, Coqui VITS, audio validation</span></div>
+      <div class="box-accent"><strong>8. Results, Challenges &amp; Future Work</strong><br/><span style="font-size:0.75rem;color:#627d98">Metrics, limitations, recommendations</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 3 — MOTIVATION ══════ -->
+<section data-background-color="#f0f7ff">
+  <div class="section-num">Section 1 · Motivation</div>
+  <h2>Motivation &amp; Problem Statement</h2>
+  <div class="cols cols-2">
+    <div>
+      <h3>The Problem</h3>
+      <ul>
+        <li>Wikiquote contains <strong>1.3M+ quotes</strong> but no voice-accessible search interface</li>
+        <li>Existing quote retrieval systems are <strong>text-only</strong> — no speech input, no speaker awareness</li>
+        <li>Multi-user systems typically require manual login; <strong>voice biometrics</strong> can replace this</li>
+        <li>TTS responses are generic — users want a <strong>personalized voice experience</strong></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Research Questions</h3>
+      <div class="box" style="margin-bottom:10px"><strong>RQ1.</strong> Can Whisper ASR accurately transcribe literary and archaic speech for quote retrieval?</div>
+      <div class="box" style="margin-bottom:10px"><strong>RQ2.</strong> Can ECAPA-TDNN speaker embeddings reliably identify enrolled users from short voice samples?</div>
+      <div class="box"><strong>RQ3.</strong> Does the combined pipeline provide a satisfactory end-to-end user experience within acceptable latency?</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 4 — OBJECTIVES ══════ -->
+<section data-background-color="#ffffff">
+  <div class="section-num">Section 1 · Objectives</div>
+  <h2>Project Objectives</h2>
+  <div class="cols cols-3">
+    <div class="box" style="text-align:center">
+      <div style="font-size:2rem;margin-bottom:10px">📚</div>
+      <h3 style="text-align:center">Data Engineering</h3>
+      <p>Parse the full English Wikiquote XML dump, clean and deduplicate 1.3M entries, model as a Neo4j knowledge graph with full-text indexing</p>
+    </div>
+    <div class="box" style="text-align:center">
+      <div style="font-size:2rem;margin-bottom:10px">🧠</div>
+      <h3 style="text-align:center">ML Pipeline</h3>
+      <p>Integrate state-of-the-art models: Whisper for ASR, ECAPA-TDNN for speaker ID, gTTS/Coqui for synthesis — all in a unified Python service</p>
+    </div>
+    <div class="box" style="text-align:center">
+      <div style="font-size:2rem;margin-bottom:10px">🎙️</div>
+      <h3 style="text-align:center">UX &amp; Interface</h3>
+      <p>Build a Streamlit web app with real-time voice recording, editable transcript review, ranked results, and personalized audio playback</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 5 — ARCHITECTURE ══════ -->
+<section data-background-color="#f0f7ff">
+  <div class="section-num">Section 2 · Architecture</div>
+  <h2>System Architecture</h2>
+  <div class="pipeline-row" style="margin-bottom:20px">
+    <div class="pip-box">🎤 Voice Input</div><div class="pip-arrow">→</div>
+    <div class="pip-box">🌐 Whisper ASR</div><div class="pip-arrow">→</div>
+    <div class="pip-box">🧠 Speaker ID</div><div class="pip-arrow">→</div>
+    <div class="pip-box">✏️ Transcript Review</div><div class="pip-arrow">→</div>
+    <div class="pip-box">🔍 Neo4j Search</div><div class="pip-arrow">→</div>
+    <div class="pip-box">🔊 TTS Output</div>
+  </div>
+  <div class="cols cols-2">
+    <div>
+      <h3>Phase 1 — Input &amp; Understanding</h3>
+      <ul>
+        <li>Audio captured via browser <code>MediaRecorder API</code></li>
+        <li>faster-whisper transcribes with literary domain prompt</li>
+        <li>SpeechBrain ECAPA-TDNN identifies speaker in parallel</li>
+        <li>Transcript shown in editable textarea for correction</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Phase 2 — Retrieval &amp; Response</h3>
+      <ul>
+        <li>Rule-based intent router classifies query type</li>
+        <li>Neo4j full-text search returns top-5 ranked quotes</li>
+        <li>Response generator applies anti-hallucination rules</li>
+        <li>gTTS synthesizes audio with speaker's voice preferences</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 6 — DATA ══════ -->
+<section data-background-color="#ffffff">
+  <div class="section-num">Section 3 · Data</div>
+  <h2>Wikiquote Corpus &amp; Neo4j Schema</h2>
+  <div class="cols cols-2">
+    <div>
+      <h3>Data Ingestion</h3>
+      <ul>
+        <li>Source: <strong>English Wikiquote XML dump</strong> (Dec 2025)</li>
+        <li>Raw entries: ~1.3M quotes across all pages</li>
+        <li>Custom XML parser extracts quote text, author, work</li>
+        <li>15+ quality filters: min 120 chars, no citations, no brackets, no URLs</li>
+        <li>Deduplication threshold: <strong>0.95 cosine similarity</strong></li>
+        <li>Batch ingestion: 1,000 records/batch into Neo4j</li>
+      </ul>
+      <div class="tag-row">
+        <span class="badge">XML Parsing</span>
+        <span class="badge">Regex Filters</span>
+        <span class="badge">Batch Ingestion</span>
+      </div>
+    </div>
+    <div>
+      <h3>Graph Schema</h3>
+      <table>
+        <tr><th>Node</th><th>Key Properties</th></tr>
+        <tr><td><code>Person</code></td><td>name, roles</td></tr>
+        <tr><td><code>Quote</code></td><td>text, quality_score, is_canonical</td></tr>
+        <tr><td><code>Work</code></td><td>name</td></tr>
+        <tr><td><code>Source</code></td><td>name, type</td></tr>
+      </table>
+      <br/>
+      <table>
+        <tr><th>Relationship</th><th>Meaning</th></tr>
+        <tr><td><code>SAID</code></td><td>Person directly said quote</td></tr>
+        <tr><td><code>WROTE</code></td><td>Person authored work</td></tr>
+        <tr><td><code>HAS_QUOTE</code></td><td>Work/Person contains quote</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 7 — ASR ══════ -->
+<section data-background-color="#f0f7ff">
+  <div class="section-num">Section 4 · ASR</div>
+  <h2>Speech Recognition — Whisper ASR</h2>
+  <div class="cols cols-2">
+    <div>
+      <h3>Model Details</h3>
+      <ul>
+        <li><strong>faster-whisper</strong>: CTranslate2-optimized Whisper</li>
+        <li>Model size: <code>base</code> (74M params) — balance of speed &amp; accuracy</li>
+        <li>Latency: <strong>~2–3 seconds</strong> on CPU (Apple Silicon)</li>
+        <li>Input: WAV audio from browser or file upload</li>
+        <li>Output: plain-text transcript + language detection</li>
+      </ul>
+      <br/>
+      <h3>Domain Prompt Engineering</h3>
+      <div class="box-accent">
+        <p style="font-style:italic;font-size:0.78rem">"Quote search. The user may say a famous literary quote, an author name, a work title, or a topic. Literary and poetic language may appear."</p>
+      </div>
+      <p style="margin-top:8px">This biases the language model toward archaic vocabulary (<em>thee, wherefore, doth</em>), significantly reducing transcription errors on classical text.</p>
+    </div>
+    <div>
+      <h3>Processing Flow</h3>
+      <div class="box" style="margin-bottom:8px">① Audio bytes → temporary WAV file</div>
+      <div class="box" style="margin-bottom:8px">② faster-whisper loads model (cached after first run)</div>
+      <div class="box" style="margin-bottom:8px">③ Transcribe with domain <code>initial_prompt</code></div>
+      <div class="box" style="margin-bottom:8px">④ Return <code>text</code> + confidence segments</div>
+      <div class="box">⑤ Display in <strong>editable textarea</strong> for user correction</div>
+      <div class="tag-row" style="margin-top:12px">
+        <span class="badge">faster-whisper</span>
+        <span class="badge">CTranslate2</span>
+        <span class="badge">domain prompting</span>
+        <span class="badge-amber badge">CPU ~2–3s</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 8 — SPEAKER ID ══════ -->
+<section data-background-color="#ffffff">
+  <div class="section-num">Section 5 · Speaker ID</div>
+  <h2>Speaker Identification — ECAPA-TDNN</h2>
+  <div class="cols cols-2">
+    <div>
+      <h3>Model Architecture</h3>
+      <ul>
+        <li><strong>ECAPA-TDNN</strong> (Emphasized Channel Attention, Propagation and Aggregation — Time Delay Neural Network)</li>
+        <li>Implemented via <strong>SpeechBrain</strong> framework</li>
+        <li>Produces <strong>192-dimensional x-vectors</strong> per utterance</li>
+        <li>Trained on VoxCeleb2 dataset (millions of speaker samples)</li>
+        <li>Robust to short utterances (3–5 sec) and background noise</li>
+      </ul>
+      <br/>
+      <h3>Enrollment Process</h3>
+      <ul>
+        <li>User records 3–5 second voice sample</li>
+        <li>Embedding extracted and stored in <strong>Neo4j</strong> as Speaker node</li>
+        <li>Voice preferences (gender, speed, accent) stored alongside</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Identification Algorithm</h3>
+      <div class="box" style="margin-bottom:8px">① Extract x-vector from query audio</div>
+      <div class="box" style="margin-bottom:8px">② Load all enrolled speaker embeddings from Neo4j</div>
+      <div class="box" style="margin-bottom:8px">③ Compute cosine similarity for each pair</div>
+      <div class="box" style="margin-bottom:8px">④ Best match score vs. threshold <code>τ = 0.55</code></div>
+      <div class="box">⑤ Return speaker name + confidence, or "Guest"</div>
+      <br/>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Embedding dimensions</td><td>192</td></tr>
+        <tr><td>Identification accuracy</td><td><strong>81.5%</strong></td></tr>
+        <tr><td>Similarity threshold</td><td>0.55</td></tr>
+        <tr><td>Min enrollment audio</td><td>3 seconds</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════ SLIDE 9 — RETRIEVAL ══════ -->
+<section data-background-color="#f0f7ff">
+  <div class="section-num">Section 6 · Retrieval</div>
+  <h2>Intent Routing &amp; Neo4j Retrieval</h2>
+  <div class="cols cols-2">
+    <div>
+      <h3>Rule-Based Intent Router</h3>
+      <ul>
+        <li>Lightweight <strong>regex pattern classifier</strong> — zero latency, fully interpretable</li>
+        <li>Priority: <em>Quote-text first</em> → Author → Topic fallback</li>
+        <li>Author patterns: <code>^by [Name]</code>, <code>what did [Name] say</code>, <code>from [Work]</code></li>
+        <li>Fuzzy author resolution via <code>difflib.SequenceMatcher</code> (edit distance ≤ 2)</li>
+      </ul>
+      <br/>
+      <h3>Ranking Algorithm</h3>
+      <ul>
+        <li>Neo4j full-text Lucene index on <code>Quote.text</code></li>
+        <li>Base score from BM25 full-text similarity</li>
+        <li>Boosted for: canonical quotes, famous authors, longer text</li>
+        <li>Penalized for: citations, duplicates, low quality_score</li>
+        <li>Top-5 results returned with normalized similarity %</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Sample Cypher Query</h3>
+      <pre><code class="language-cypher">CALL db.index.fulltext.queryNodes(
+  'quoteIndex', $query
+) YIELD node AS q, score
+MATCH (p:Person)-[:SAID]->(q)
+WHERE size(q.text) >= 120
+  AND NOT q.text =~ '.*p\\.\\s*\\d+.*'
+  AND NOT q.text =~ '.*https?://.*'
+RETURN q.text, p.name,
+       score * q.quality_score AS rank
+ORDER BY rank DESC
+LIMIT 5</code></pre>
+      <div class="tag-row">
+        <span class="badge">Neo4j Lucene</span>
+        <span class="badge">BM25</span>
+        <span class="badge">Quality Scoring</span>
+        <span class="badge">difflib fuzzy match</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 10 — TTS ══════ -->
+<section data-background-color="#ffffff">
+  <div class="section-num">Section 7 · TTS</div>
+  <h2>Text-to-Speech &amp; Personalization</h2>
+  <div class="cols cols-2">
+    <div>
+      <h3>TTS Engine Stack</h3>
+      <table>
+        <tr><th>Engine</th><th>Type</th><th>Use Case</th></tr>
+        <tr><td><strong>gTTS</strong></td><td>Cloud API</td><td>Primary — natural prosody</td></tr>
+        <tr><td><strong>Coqui VITS</strong></td><td>Local model</td><td>Multi-speaker, offline</td></tr>
+        <tr><td><strong>macOS say</strong></td><td>OS built-in</td><td>Offline fallback</td></tr>
+      </table>
+      <br/>
+      <h3>Per-Speaker Personalization</h3>
+      <ul>
+        <li>Voice gender (male / female / neutral) stored in Speaker node</li>
+        <li>Speaking speed and regional accent configurable per user</li>
+        <li>Preferences loaded automatically on speaker identification</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Audio Validation</h3>
+      <div class="box-accent" style="margin-bottom:12px">
+        <strong>Problem:</strong> Risk that TTS speaks different content than displayed quote (hallucination or wrong index)
+      </div>
+      <div class="box-accent" style="margin-bottom:12px">
+        <strong>Solution:</strong> <code>_validate_audio_text()</code> in the orchestrator asserts exact string match between displayed quote and TTS input before synthesis
+      </div>
+      <div class="box-accent">
+        <strong>Result:</strong> Zero audio-text mismatches in testing; any mismatch raises an exception and logs a detailed error
+      </div>
+      <div class="tag-row" style="margin-top:12px">
+        <span class="badge">gTTS</span>
+        <span class="badge">Coqui VITS</span>
+        <span class="badge-green badge">Audio Validated</span>
+        <span class="badge">~1–2s</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 11 — METRICS ══════ -->
+<section data-background-color="#f0f7ff">
+  <div class="section-num">Section 8 · Results</div>
+  <h2>Performance Metrics</h2>
+  <div class="cols cols-3" style="margin-bottom:20px">
+    <div class="box stat"><span class="stat-val">1.3M+</span><span class="stat-lbl">Quotes Indexed</span></div>
+    <div class="box stat"><span class="stat-val">81.5%</span><span class="stat-lbl">Speaker ID Accuracy</span></div>
+    <div class="box stat"><span class="stat-val">~5–8s</span><span class="stat-lbl">End-to-End Latency (CPU)</span></div>
+  </div>
+  <div class="cols cols-2">
+    <div>
+      <table>
+        <tr><th>Component</th><th>Metric</th><th>Value</th></tr>
+        <tr><td>ASR (Whisper base)</td><td>Latency</td><td>~2–3s CPU</td></tr>
+        <tr><td>Speaker ID (ECAPA)</td><td>Accuracy</td><td>81.5%</td></tr>
+        <tr><td>TTS (gTTS)</td><td>Latency</td><td>~1–2s</td></tr>
+        <tr><td>Neo4j Search</td><td>Latency</td><td>&lt;100ms</td></tr>
+        <tr><td>Speaker Embedding</td><td>Dimensions</td><td>192</td></tr>
+        <tr><td>Similarity Threshold</td><td>τ</td><td>0.55</td></tr>
+        <tr><td>Dedup Threshold</td><td>cosine sim</td><td>0.95</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Working Features ✅</h3>
+      <ul>
+        <li>Multi-user speaker enrollment &amp; identification</li>
+        <li>Voice chat with full pipeline (record→respond)</li>
+        <li>Live search autocomplete (chatbot)</li>
+        <li>Personalized TTS with audio validation</li>
+        <li>Author attribution &amp; work mapping</li>
+        <li>Editable transcript review (human-in-the-loop)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 12 — CHALLENGES ══════ -->
+<section data-background-color="#ffffff">
+  <div class="section-num">Section 8 · Challenges</div>
+  <h2>Technical Challenges &amp; Solutions</h2>
+  <div class="cols cols-2">
+    <div>
+      <div class="box-accent" style="margin-bottom:12px">
+        <h3 style="margin-bottom:6px">⚠️ Data Quality Noise</h3>
+        <p><strong>Problem:</strong> ~1.3M entries include movie dialogue, screenplay fragments (<code>[picket sign] COGITO ERGO NOTHING!</code>), bibliographic citations (<em>p. 13</em>), and parody quotes.</p>
+        <p style="margin-top:6px"><strong>Solution:</strong> 15+ regex filters (min length 120, no page refs, no brackets, no URLs). Partially resolved — some noise persists.</p>
+      </div>
+      <div class="box-accent">
+        <h3 style="margin-bottom:6px">🔍 Missing Canonical Quotes</h3>
+        <p><strong>Problem:</strong> Descartes' "Cogito ergo sum", several Socrates quotes are absent. Database has references to these figures but not their actual quotes.</p>
+        <p style="margin-top:6px"><strong>Root Cause:</strong> Non-standard XML formatting in Wikiquote source pages. A data-ingestion gap, not a retrieval failure.</p>
+      </div>
+    </div>
+    <div>
+      <div class="box-accent" style="margin-bottom:12px">
+        <h3 style="margin-bottom:6px">⏱️ CPU Latency</h3>
+        <p><strong>Problem:</strong> Full pipeline takes 6–10 seconds on CPU — ASR (~3s) + Speaker ID (~1s) + TTS (~2s).</p>
+        <p style="margin-top:6px"><strong>Mitigation:</strong> faster-whisper (4× speedup over base Whisper), model caching in session_state. GPU would reduce total to &lt;2s.</p>
+      </div>
+      <div class="box-accent">
+        <h3 style="margin-bottom:6px">📝 ASR Accuracy on Archaic Text</h3>
+        <p><strong>Problem:</strong> Standard ASR models struggle with literary language — <em>"wherefore art thou"</em> transcribed as <em>"where for art thou"</em>.</p>
+        <p style="margin-top:6px"><strong>Solution:</strong> Literary domain prompt + editable transcript review (human-in-the-loop correction before search).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 13 — FUTURE WORK ══════ -->
+<section data-background-color="#f0f7ff">
+  <div class="section-num">Section 8 · Future Work</div>
+  <h2>Limitations &amp; Future Directions</h2>
+  <div class="cols cols-3">
+    <div class="box">
+      <h3>Data Quality</h3>
+      <ul>
+        <li>Re-parse Wikiquote XML with stricter extraction rules</li>
+        <li>Train ML-based quote quality classifier</li>
+        <li>Integrate supplementary quote databases (BrainyQuote, QuoteDB)</li>
+        <li>Add Neo4j uniqueness constraint to prevent duplicates</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Model Improvements</h3>
+      <ul>
+        <li>Upgrade to Whisper <code>medium</code> or <code>large-v3</code> for better archaic text accuracy</li>
+        <li>Fine-tune ECAPA-TDNN on literary reading speech domain</li>
+        <li>Add speaker adaptation — update embeddings with more samples over time</li>
+        <li>GPU deployment to reduce latency below 2s</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>System Extensions</h3>
+      <ul>
+        <li>Semantic search using sentence-transformer embeddings</li>
+        <li>Multi-language support (French, Arabic Wikiquote)</li>
+        <li>User feedback loop to rate quote quality</li>
+        <li>REST API layer for third-party integration</li>
+        <li>Mobile-friendly PWA version</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SLIDE 14 — CONCLUSION ══════ -->
+<section data-background-gradient="linear-gradient(135deg,#f0f7ff 0%,#e0f2fe 100%)" style="text-align:center">
+  <div class="section-num" style="text-align:center">Conclusion</div>
+  <h2 style="text-align:center;border:none">Summary</h2>
+  <p style="max-width:720px;margin:0 auto 24px;font-size:0.88rem;line-height:1.7;text-align:center">
+    This project successfully demonstrates a <strong>complete end-to-end voice-enabled NLP pipeline</strong> — from raw speech input to personalized audio response — operating entirely on consumer hardware. The system combines state-of-the-art ML models (Whisper, ECAPA-TDNN) with a graph database (Neo4j) and a real-time web interface (Streamlit) to provide a novel multi-user quote retrieval experience.
+  </p>
+  <div class="cols cols-3" style="max-width:900px;margin:0 auto 24px">
+    <div class="box stat"><span class="stat-val">1.3M</span><span class="stat-lbl">Quotes Indexed</span></div>
+    <div class="box stat"><span class="stat-val">81.5%</span><span class="stat-lbl">Speaker Accuracy</span></div>
+    <div class="box stat"><span class="stat-val">6</span><span class="stat-lbl">Pipeline Stages</span></div>
+  </div>
+  <p style="font-size:0.85rem;color:#0ea5e9;font-weight:600;margin-bottom:8px">Sara Abudarda · Final Year Project · 2025</p>
+  <p style="font-size:0.78rem;color:#627d98">github.com/saraabudarda/ChatBot_VoiceIdentifier_TTS_Wikiquote</p>
+  <p style="font-size:1.8rem;margin-top:20px">🙏 Thank you — Questions?</p>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: true,
+  transition: 'slide',
+  transitionSpeed: 'fast',
+  controls: true,
+  progress: true,
+  center: false,
+  width: 1280,
+  height: 720,
+  margin: 0.04,
+  plugins: [RevealHighlight, RevealNotes]
+});
+</script>
+</body>
+</html>
