@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WikiQuote Voice Chatbot — Project Presentation</title>
+  <meta name="description" content="Voice-enabled quote retrieval chatbot powered by Neo4j, Whisper, SpeechBrain and gTTS — by Sara Abudarda."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-inner">
+    <div class="nav-logo"><span class="logo-icon">🎙️</span><span class="logo-text">WikiQuote<span class="accent"> NLP</span></span></div>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#tech-stack">Tech Stack</a></li>
+      <li><a href="#metrics">Metrics</a></li>
+      <li><a href="#demo" class="nav-cta">Live Demo ↗</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="overview">
+  <div class="hero-bg-overlay"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Final Year Project · 2025 · Sara Abudarda</div>
+    <h1 class="hero-title">Voice-Enabled<br/><span class="gradient-text">Quote Chatbot</span></h1>
+    <p class="hero-sub">
+      An end-to-end NLP system that lets users <strong>speak a quote fragment</strong>, automatically identifies who is speaking,
+      searches <strong>1.3 million Wikiquote entries</strong>, and replies with a <strong>personalized synthesized voice</strong>.
+    </p>
+    <div class="hero-chips">
+      <span class="chip">🎤 Whisper ASR</span>
+      <span class="chip">🧠 ECAPA-TDNN Speaker ID</span>
+      <span class="chip">🗄️ Neo4j Graph DB</span>
+      <span class="chip">🔊 gTTS · Coqui TTS</span>
+      <span class="chip">🐍 Python · Streamlit</span>
+    </div>
+    <div class="hero-actions">
+      <a href="http://localhost:8502" target="_blank" id="demo-btn" class="btn btn-primary"><span>▶</span> Launch Live Demo</a>
+      <a href="#how-it-works" class="btn btn-outline">See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hs-val">1.3M+</span><span class="hs-lbl">Quotes</span></div>
+      <div class="hero-stat"><span class="hs-val">81.5%</span><span class="hs-lbl">Speaker Accuracy</span></div>
+      <div class="hero-stat"><span class="hs-val">~5s</span><span class="hs-lbl">Full Pipeline</span></div>
+      <div class="hero-stat"><span class="hs-val">4</span><span class="hs-lbl">Core Modules</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="waveform-ring">
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+      <div class="mic-icon">🎙️</div>
+    </div>
+    <div class="floating-quote fq1">"To be, or not to be…"<span class="fq-author">— Shakespeare</span></div>
+    <div class="floating-quote fq2">"Imagination is more important…"<span class="fq-author">— Einstein</span></div>
+    <div class="floating-quote fq3">"Be the change you wish to see…"<span class="fq-author">— Gandhi</span></div>
+  </div>
+  <div class="scroll-hint"><span>Scroll to explore</span><div class="scroll-arrow"></div></div>
+</header>
+
+<!-- HOW IT WORKS — 4 modules -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-label">🧩 System Modules</div>
+    <h2 class="section-title">What the System Does</h2>
+    <p class="section-sub">
+      The project is built around four tightly integrated modules. Each module solves a distinct challenge in the voice-to-quote pipeline.
+      Together they form a seamless, multi-user NLP system that bridges voice interaction, knowledge retrieval, and personalized audio output.
+    </p>
+
+    <div class="features-grid">
+
+      <div class="feature-card" data-delay="0">
+        <div class="fc-icon">🤖</div>
+        <h3>Chatbot &amp; Live Search</h3>
+        <p>The chatbot interface is the primary text entry point. It provides smart one-click suggestion pills across four categories — Authors, Works, Moods, and Topics — so users can explore the database without knowing exactly what to type. Under the hood, every keystroke triggers a Neo4j full-text query and updates results in real time without a page reload.</p>
+        <ul class="fc-list">
+          <li>Suggestion pills: Authors, Works, Moods, Topics</li>
+          <li>Live autocomplete — results update as you type (min 3 chars)</li>
+          <li>Top-5 ranked results with normalized similarity scores</li>
+          <li>Conversational intent routing: quote text → author → topic fallback</li>
+          <li>Anti-hallucination response generator — only shows DB results</li>
+        </ul>
+      </div>
+
+      <div class="feature-card" data-delay="100">
+        <div class="fc-icon">🎤</div>
+        <h3>Speaker Identification</h3>
+        <p>Users can enroll their voice by recording a 3–5 second sample. The system extracts a 192-dimensional voice embedding using SpeechBrain's ECAPA-TDNN model and stores it in the Neo4j graph. On future interactions, any recorded voice is matched against all enrolled profiles using cosine similarity, identifying the speaker with 81.5% accuracy even in noisy conditions.</p>
+        <ul class="fc-list">
+          <li>SpeechBrain ECAPA-TDNN — state-of-the-art speaker embeddings</li>
+          <li>192-dimensional speaker vectors stored per user in Neo4j</li>
+          <li>Cosine similarity matching, threshold = 0.55</li>
+          <li>Multi-user profile management (enroll, identify, delete)</li>
+          <li>Graceful fallback to "Guest" if speaker is unknown</li>
+        </ul>
+      </div>
+
+      <div class="feature-card" data-delay="200">
+        <div class="fc-icon">🔊</div>
+        <h3>Text-to-Speech</h3>
+        <p>Each enrolled speaker can configure a preferred voice profile — male, female, or neutral — along with speaking speed and regional accent. When the system returns a quote, it synthesizes audio using the speaker's stored preferences, creating a personalized audio response. The TTS output is validated against the displayed text to guarantee synchronization between what is shown and what is spoken.</p>
+        <ul class="fc-list">
+          <li>gTTS (Google TTS) as primary engine — natural prosody</li>
+          <li>Coqui VITS multi-speaker model as alternative</li>
+          <li>macOS <code>say</code> as offline fallback</li>
+          <li>Voice preferences stored per speaker profile</li>
+          <li>Audio validation: TTS text must match displayed quote exactly</li>
+          <li>In-browser playback + downloadable audio file</li>
+        </ul>
+      </div>
+
+      <div class="feature-card" data-delay="300">
+        <div class="fc-icon">🎙️</div>
+        <h3>Full Voice Pipeline</h3>
+        <p>The voice chat module combines all other modules into a single seamless flow. The user records their voice, Whisper transcribes it with a literary domain prompt to improve accuracy on archaic language, the speaker is identified, and the transcript is shown in an editable box so errors can be corrected before searching. The system then retrieves the top-5 matching quotes and plays back the best match in the speaker's personalized voice.</p>
+        <ul class="fc-list">
+          <li>faster-whisper base model — 2–3s transcription on CPU</li>
+          <li>Domain prompt: literary, archaic, and poetic language aware</li>
+          <li>Editable transcript review before search — corrects ASR errors</li>
+          <li>Simultaneous speaker ID and transcription in one step</li>
+          <li>"Record Again" resets voice state without losing app session</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE — step by step process -->
+<section class="section section-dark" id="pipeline">
+  <div class="container">
+    <div class="section-label">🔄 Step-by-Step Process</div>
+    <h2 class="section-title">The Voice Pipeline — End to End</h2>
+    <p class="section-sub">
+      Follow a single query from the moment the user presses Record, all the way through to a personalized spoken response.
+      Every step is explained below with the technology used and the design decision behind it.
+    </p>
+
+    <div class="pipeline-steps">
+
+      <div class="pip-step" data-delay="0">
+        <div class="pip-num">01</div>
+        <div class="pip-content">
+          <h3>🎤 Voice Recording</h3>
+          <p>The user presses the ⏺ Record button inside the browser. Audio is captured in real time using the <code>streamlit-audiorecorder</code> widget, which wraps the browser's native <code>MediaRecorder API</code>. The result is a WAV audio segment in memory — no file is written to disk at this stage. Users can also upload a pre-recorded file (WAV, MP3, OGG, M4A) to bypass the microphone.</p>
+          <div class="pip-tech">
+            <span class="pip-tech-tag">streamlit-audiorecorder</span>
+            <span class="pip-tech-tag">WAV / MP3 / OGG</span>
+            <span class="pip-tech-tag">MediaRecorder API</span>
+          </div>
+        </div>
+      </div>
+      <div class="pip-connector"></div>
+
+      <div class="pip-step" data-delay="80">
+        <div class="pip-num">02</div>
+        <div class="pip-content">
+          <h3>🌐 Speech-to-Text (Whisper ASR)</h3>
+          <p>The WAV audio is written to a temporary file and passed to <strong>faster-whisper</strong> running the <code>base</code> model. A custom domain prompt is injected — <em>"Quote search. The user may say a famous literary quote, an author name, a work title, or a topic. Literary and poetic language may appear."</em> — which biases the language model toward archaic vocabulary (e.g. "wherefore", "thee", "doth") and significantly improves transcription accuracy on classical text. The model returns a plain-text transcript in ~2–3 seconds on CPU.</p>
+          <div class="pip-tech">
+            <span class="pip-tech-tag">faster-whisper</span>
+            <span class="pip-tech-tag">Whisper base</span>
+            <span class="pip-tech-tag">domain prompt</span>
+            <span class="pip-tech-tag">~2–3s latency</span>
+          </div>
+        </div>
+      </div>
+      <div class="pip-connector"></div>
+
+      <div class="pip-step" data-delay="160">
+        <div class="pip-num">03</div>
+        <div class="pip-content">
+          <h3>🧠 Speaker Identification (ECAPA-TDNN)</h3>
+          <p>In parallel with transcription, SpeechBrain's <strong>ECAPA-TDNN</strong> model extracts a <strong>192-dimensional voice embedding</strong> from the same audio file. This embedding is compared against all enrolled speaker profiles stored in Neo4j using <strong>cosine similarity</strong>. If the best match exceeds a 0.55 threshold, the speaker is identified and their name and voice preferences are loaded for personalized output. If no match is found, the session continues as "Guest" with a default voice.</p>
+          <div class="pip-tech">
+            <span class="pip-tech-tag">SpeechBrain ECAPA-TDNN</span>
+            <span class="pip-tech-tag">192-dim embedding</span>
+            <span class="pip-tech-tag">cosine similarity</span>
+            <span class="pip-tech-tag">threshold 0.55</span>
+          </div>
+        </div>
+      </div>
+      <div class="pip-connector"></div>
+
+      <div class="pip-step" data-delay="240">
+        <div class="pip-num">04</div>
+        <div class="pip-content">
+          <h3>✏️ Editable Transcript Review</h3>
+          <p>The ASR transcript is shown to the user in an <strong>editable text area</strong> before any search is performed. This is a deliberate UX design decision: Whisper is not perfect, especially on archaic literary language, and allowing the user to fix errors before searching dramatically improves retrieval quality. The speaker identity is also displayed with a confidence score. The user then clicks "Search with this text" to proceed.</p>
+          <div class="pip-tech">
+            <span class="pip-tech-tag">editable textarea</span>
+            <span class="pip-tech-tag">speaker name + confidence</span>
+            <span class="pip-tech-tag">human-in-the-loop</span>
+          </div>
+        </div>
+      </div>
+      <div class="pip-connector"></div>
+
+      <div class="pip-step" data-delay="320">
+        <div class="pip-num">05</div>
+        <div class="pip-content">
+          <h3>🔍 Intent Routing &amp; Neo4j Search</h3>
+          <p>The query is classified by a <strong>rule-based intent router</strong> using regex patterns. The router first checks if the query matches an explicit author request (e.g. "quotes by Einstein", "what did Shakespeare say") — if so, it searches by <code>Person</code> name. Otherwise it defaults to <strong>quote-text-first search</strong>, querying the Neo4j full-text index on <code>Quote.text</code>. Results are ranked by a quality scoring function that boosts canonical quotes from famous authors (Shakespeare, Gandhi, Einstein), penalizes citations and duplicates, and returns the top-5 results with normalized similarity percentages.</p>
+          <div class="pip-tech">
+            <span class="pip-tech-tag">regex intent router</span>
+            <span class="pip-tech-tag">Neo4j full-text index</span>
+            <span class="pip-tech-tag">quality ranking</span>
+            <span class="pip-tech-tag">top-5 results</span>
+          </div>
+        </div>
+      </div>
+      <div class="pip-connector"></div>
+
+      <div class="pip-step" data-delay="400">
+        <div class="pip-num">06</div>
+        <div class="pip-content">
+          <h3>🔊 Personalized TTS Response</h3>
+          <p>The best-matching quote is synthesized using the identified speaker's preferred TTS voice. The system calls <strong>gTTS</strong> (Google Text-to-Speech) with the speaker's configured language, speed, and accent settings. Before audio is played, a validation step confirms that the text passed to TTS exactly matches the quote displayed on screen — preventing any mismatch between what is shown and what is spoken. The audio plays inline in the browser and can be downloaded as a WAV file.</p>
+          <div class="pip-tech">
+            <span class="pip-tech-tag">gTTS Google TTS</span>
+            <span class="pip-tech-tag">Coqui VITS</span>
+            <span class="pip-tech-tag">audio validation</span>
+            <span class="pip-tech-tag">per-speaker voice prefs</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="section" id="tech-stack">
+  <div class="container">
+    <div class="section-label">🛠️ Technologies</div>
+    <h2 class="section-title">Tech Stack</h2>
+    <p class="section-sub">
+      Each technology was chosen for a specific reason. The stack covers the full spectrum from data storage and retrieval,
+      through machine learning models for ASR and speaker ID, to the frontend and audio synthesis layer.
+    </p>
+
+    <div class="stack-grid">
+      <div class="stack-card" data-delay="0">
+        <div class="stack-layer">Frontend</div>
+        <div class="stack-tech">Streamlit</div>
+        <div class="stack-detail">Rapid Python-native web UI with session state management and component reuse. streamlit-audiorecorder enables real-time microphone capture inside the browser.</div>
+        <div class="stack-why">✦ Chosen for fast iteration and tight Python integration</div>
+      </div>
+      <div class="stack-card" data-delay="60">
+        <div class="stack-layer">ASR</div>
+        <div class="stack-tech">faster-whisper</div>
+        <div class="stack-detail">CTranslate2-optimized Whisper inference — up to 4× faster than the original. Base model balances speed and accuracy. Domain prompting compensates for archaic literary vocabulary.</div>
+        <div class="stack-why">✦ Best open-source ASR for general speech on CPU</div>
+      </div>
+      <div class="stack-card" data-delay="120">
+        <div class="stack-layer">Speaker ID</div>
+        <div class="stack-tech">SpeechBrain</div>
+        <div class="stack-detail">ECAPA-TDNN model extracts 192-dim x-vectors that capture the unique acoustic signature of each speaker. Robust to background noise and short utterances (3–5 sec).</div>
+        <div class="stack-why">✦ State-of-the-art speaker verification model</div>
+      </div>
+      <div class="stack-card" data-delay="180">
+        <div class="stack-layer">TTS</div>
+        <div class="stack-tech">gTTS / Coqui</div>
+        <div class="stack-detail">Google TTS provides natural, fluent speech synthesis with multilingual support. Coqui VITS is used as a local multi-speaker alternative. macOS <code>say</code> as offline fallback.</div>
+        <div class="stack-why">✦ Natural prosody + per-user voice personalization</div>
+      </div>
+      <div class="stack-card" data-delay="240">
+        <div class="stack-layer">Database</div>
+        <div class="stack-tech">Neo4j</div>
+        <div class="stack-detail">Graph database with native full-text search indexes on 1.3M+ quotes. The graph schema models Person→Quote, Person→Work, and Work→Quote relationships, enabling rich author-attribution queries.</div>
+        <div class="stack-why">✦ Graph model naturally fits quote–author–work relationships</div>
+      </div>
+      <div class="stack-card" data-delay="300">
+        <div class="stack-layer">NLP Routing</div>
+        <div class="stack-tech">Custom Router</div>
+        <div class="stack-detail">Lightweight regex-based intent classifier that detects quote-text vs. author vs. topic queries. difflib fuzzy matching resolves author name variations (e.g. "Wilde" → "Oscar Wilde").</div>
+        <div class="stack-why">✦ Zero latency, fully interpretable, no external API</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="section section-dark" id="metrics">
+  <div class="container">
+    <div class="section-label">📊 Performance</div>
+    <h2 class="section-title">System Metrics &amp; Results</h2>
+    <p class="section-sub">
+      All metrics were measured on local CPU hardware (Apple Silicon). The system is designed for demo-scale use;
+      GPU deployment would reduce end-to-end latency from ~5–8 seconds to under 2 seconds.
+    </p>
+
+    <div class="metrics-grid">
+      <div class="metric-card" data-delay="0">
+        <div class="mc-value">1.3M+</div>
+        <div class="mc-label">Quotes in Database</div>
+        <div class="mc-bar"><div class="mc-fill" style="--fill:100%"></div></div>
+        <div class="mc-note">Sourced from the English Wikiquote XML dump (December 2025). Indexed with Neo4j full-text search across Quote.text, Person.name, and Work.name.</div>
+      </div>
+      <div class="metric-card" data-delay="80">
+        <div class="mc-value">81.5%</div>
+        <div class="mc-label">Speaker ID Accuracy</div>
+        <div class="mc-bar"><div class="mc-fill" style="--fill:81.5%"></div></div>
+        <div class="mc-note">Measured on enrolled test speakers using ECAPA-TDNN cosine similarity at threshold 0.55. Degrades gracefully — unknown speakers become "Guest".</div>
+      </div>
+      <div class="metric-card" data-delay="160">
+        <div class="mc-value">~2–3s</div>
+        <div class="mc-label">ASR Latency</div>
+        <div class="mc-bar"><div class="mc-fill amber" style="--fill:35%"></div></div>
+        <div class="mc-note">faster-whisper base model on CPU. Domain prompt adds ~0.1s but significantly reduces errors on literary language.</div>
+      </div>
+      <div class="metric-card" data-delay="240">
+        <div class="mc-value">~1–2s</div>
+        <div class="mc-label">TTS Generation</div>
+        <div class="mc-bar"><div class="mc-fill amber" style="--fill:22%"></div></div>
+        <div class="mc-note">gTTS makes a network call to Google's API. Coqui VITS runs locally in ~2–4s. macOS say is near-instant.</div>
+      </div>
+      <div class="metric-card" data-delay="320">
+        <div class="mc-value">~5–8s</div>
+        <div class="mc-label">End-to-End Latency</div>
+        <div class="mc-bar"><div class="mc-fill coral" style="--fill:65%"></div></div>
+        <div class="mc-note">Full pipeline: record → ASR → Speaker ID → search → TTS → playback. Acceptable for exam demo; GPU would reduce to &lt;2s.</div>
+      </div>
+      <div class="metric-card" data-delay="400">
+        <div class="mc-value">192</div>
+        <div class="mc-label">Voice Embedding Dims</div>
+        <div class="mc-bar"><div class="mc-fill" style="--fill:55%"></div></div>
+        <div class="mc-note">ECAPA-TDNN x-vectors. High-dimensional space ensures well-separated clusters per speaker even with short enrollment samples.</div>
+      </div>
+    </div>
+
+    <div class="challenges-row">
+      <div class="challenge-card">
+        <div class="cc-icon">⚠️</div>
+        <h4>Data Quality Noise</h4>
+        <p>The Wikiquote XML dump contains ~1.3M entries, but a significant portion are movie dialogue, screenplay fragments, bibliographic citations, and parody quotes. 15+ regex filters were applied (length minimum 120 chars, no page numbers, no bracket stage directions, no URLs), but some noise still passes through. A dedicated ML quality classifier would be the ideal solution.</p>
+      </div>
+      <div class="challenge-card">
+        <div class="cc-icon">🔍</div>
+        <h4>Missing Canonical Quotes</h4>
+        <p>Paradoxically, some of the most famous philosophical quotes are absent from the database. Descartes' "Cogito ergo sum" and several Socrates quotes are missing because the Wikiquote XML parser encountered non-standard formatting for those pages. The database has references to these authors but not their direct quotes — a data ingestion gap, not a retrieval problem.</p>
+      </div>
+      <div class="challenge-card">
+        <div class="cc-icon">⏱️</div>
+        <h4>CPU Latency</h4>
+        <p>The 6–10 second round-trip on CPU is the main UX limitation for a live demo. The two biggest contributors are Whisper ASR (~3s) and Coqui TTS (~3s). Switching to GPU inference and caching speaker embeddings in memory (rather than Neo4j) would reduce latency below 2 seconds, making the interaction feel natural and conversational.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section cta-section" id="demo">
+  <div class="container cta-container">
+    <div class="cta-glow"></div>
+    <h2 class="cta-title">Try the Live Demo</h2>
+    <p class="cta-sub">The Streamlit application is running locally. Open it, go to 🎙️ Voice Chat, and speak a quote fragment to see the full pipeline live.</p>
+    <div class="cta-steps">
+      <div class="cta-step"><span>1</span>Neo4j must be running on port 7687</div>
+      <div class="cta-step"><span>2</span>Streamlit app running on port 8502</div>
+      <div class="cta-step"><span>3</span>Navigate to 🎙️ Voice Chat tab</div>
+      <div class="cta-step"><span>4</span>Press ⏺ Record and speak a quote</div>
+    </div>
+    <a href="http://localhost:8502" target="_blank" class="btn btn-primary btn-lg" id="cta-demo-btn"><span>▶</span> Open Live Demo</a>
+    <p class="cta-credit">Built by <strong>Sara Abudarda</strong> · <a href="https://github.com/saraabudarda/ChatBot_VoiceIdentifier_TTS_Wikiquote" target="_blank">GitHub ↗</a></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-logo">🎙️ WikiQuote NLP System</div>
+    <div class="footer-links">
+      <a href="#overview">Overview</a>
+      <a href="#how-it-works">Modules</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#metrics">Metrics</a>
+      <a href="http://localhost:8502" target="_blank">Live Demo</a>
+    </div>
+    <div class="footer-copy">© 2025 Sara Abudarda · Final Year Project</div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
