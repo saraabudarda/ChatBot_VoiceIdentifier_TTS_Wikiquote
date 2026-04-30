@@ -26,6 +26,25 @@
 /* Decorative top accent bar on every slide */
 .reveal .slides section{border-top:4px solid var(--acc);box-shadow:inset 0 4px 0 0 var(--acc)}
 
+/* Chart images */
+.chart-img{border-radius:12px;border:1px solid #e2e8f0;box-shadow:var(--shadow);max-width:100%;height:auto}
+.chart-img-sm{max-height:280px;object-fit:contain}
+.chart-img-md{max-height:340px;object-fit:contain}
+
+/* Inline CSS bar chart */
+.css-bar-chart{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{width:120px;font-size:0.72rem;font-weight:600;color:var(--tx);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:22px;background:#f1f5f9;border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.65rem;font-weight:700;color:#fff;transition:width 1s ease}
+.bar-fill.blue{background:linear-gradient(90deg,#38bdf8,#0ea5e9)}
+.bar-fill.teal{background:linear-gradient(90deg,#2dd4bf,#14b8a6)}
+.bar-fill.green{background:linear-gradient(90deg,#34d399,#10b981)}
+.bar-fill.indigo{background:linear-gradient(90deg,#818cf8,#6366f1)}
+.bar-fill.gray{background:linear-gradient(90deg,#cbd5e1,#94a3b8)}
+.bar-fill.amber{background:linear-gradient(90deg,#fbbf24,#d97706)}
+.bar-total{font-size:0.78rem;font-weight:700;color:var(--pri-d);text-align:right;margin-top:6px;padding-top:8px;border-top:2px solid #e2e8f0}
+
 /* Code */
 .reveal pre{box-shadow:none;margin:10px 0}
 .reveal pre code{font-size:0.68rem;border-radius:10px;padding:16px 20px;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.6}
@@ -266,25 +285,18 @@
       </ul>
     </div>
     <div>
+      <h3>Data Composition</h3>
+      <div style="text-align:center;margin-bottom:14px">
+        <img src="data_composition.png" alt="Data composition donut chart" class="chart-img chart-img-sm"/>
+      </div>
       <h3>Neo4j Graph Schema</h3>
       <table>
         <tr><th>Node Label</th><th>Properties</th><th>Count</th></tr>
         <tr><td><code>Person</code></td><td>name, roles</td><td>~45K</td></tr>
-        <tr><td><code>Quote</code></td><td>text, quality_score, quality_bucket, is_canonical</td><td>~1.3M</td></tr>
+        <tr><td><code>Quote</code></td><td>text, quality_score, is_canonical</td><td>~1.3M</td></tr>
         <tr><td><code>Work</code></td><td>name</td><td>~12K</td></tr>
         <tr><td><code>Source</code></td><td>name, type</td><td>~8K</td></tr>
       </table>
-      <br/>
-      <h3>Relationships</h3>
-      <table>
-        <tr><th>Type</th><th>Direction</th><th>Semantics</th></tr>
-        <tr><td><code>SAID</code></td><td>Person → Quote</td><td>Direct attribution</td></tr>
-        <tr><td><code>WROTE</code></td><td>Person → Work</td><td>Authorship</td></tr>
-        <tr><td><code>HAS_QUOTE</code></td><td>Work → Quote</td><td>Containment</td></tr>
-      </table>
-      <br/>
-      <h3>Indexing</h3>
-      <p>Full-text Lucene indexes are created on <code>Quote.text</code>, <code>Person.name</code>, and <code>Work.name</code> for sub-100ms BM25 retrieval.</p>
     </div>
   </div>
 </section>
@@ -341,8 +353,9 @@
         <li><strong>Channel-dependent attention</strong> — attentive statistics pooling across the time axis</li>
       </ul>
       <br/>
-      <h3>Training Data</h3>
-      <p>The SpeechBrain pre-trained model was trained on <strong>VoxCeleb1 + VoxCeleb2</strong> (7,000+ speakers, millions of utterances from YouTube interviews). The model generalizes well to clean microphone recordings.</p>
+      <div style="text-align:center">
+        <img src="speaker_id_pipeline.png" alt="ECAPA-TDNN pipeline diagram" class="chart-img chart-img-sm"/>
+      </div>
     </div>
     <div>
       <h3>Identification Pipeline</h3>
@@ -456,16 +469,17 @@ ORDER BY rank DESC LIMIT 5</code></pre>
   </div>
   <div class="g g2">
     <div>
-      <h3>Component-Level Latency</h3>
-      <table>
-        <tr><th>Component</th><th>Metric</th><th>Value</th><th>Hardware</th></tr>
-        <tr><td>ASR (Whisper base)</td><td>Latency</td><td>~2–3s</td><td>CPU</td></tr>
-        <tr><td>Speaker ID (ECAPA)</td><td>Latency</td><td>~0.5–1s</td><td>CPU</td></tr>
-        <tr><td>Neo4j Full-Text</td><td>Latency</td><td>&lt;100ms</td><td>Local</td></tr>
-        <tr><td>TTS (gTTS)</td><td>Latency</td><td>~1–2s</td><td>Cloud API</td></tr>
-        <tr><td>TTS (Coqui VITS)</td><td>Latency</td><td>~2–4s</td><td>CPU</td></tr>
-        <tr><td>Full pipeline</td><td>E2E latency</td><td><strong>~5–8s</strong></td><td>CPU total</td></tr>
-      </table>
+      <h3>Component Latency Breakdown</h3>
+      <div class="css-bar-chart">
+        <div class="bar-row"><span class="bar-label">Whisper ASR</span><div class="bar-track"><div class="bar-fill blue" style="width:48%">~2.5s</div></div></div>
+        <div class="bar-row"><span class="bar-label">Speaker ID</span><div class="bar-track"><div class="bar-fill teal" style="width:15%">~0.8s</div></div></div>
+        <div class="bar-row"><span class="bar-label">Neo4j Search</span><div class="bar-track"><div class="bar-fill green" style="width:2%">&nbsp;</div></div></div>
+        <div class="bar-row"><span class="bar-label">TTS (gTTS)</span><div class="bar-track"><div class="bar-fill indigo" style="width:29%">~1.5s</div></div></div>
+        <div class="bar-row"><span class="bar-label">UI Overhead</span><div class="bar-track"><div class="bar-fill gray" style="width:6%">&nbsp;</div></div></div>
+        <div class="bar-total">End-to-End Total: ~5.2s (CPU)</div>
+      </div>
+      <br/>
+      <img src="latency_chart.png" alt="Latency breakdown chart" class="chart-img chart-img-sm" style="width:100%"/>
     </div>
     <div>
       <h3>System Capabilities</h3>
@@ -479,6 +493,14 @@ ORDER BY rank DESC LIMIT 5</code></pre>
         <li>Editable transcript review (human-in-the-loop)</li>
         <li>"Record Again" state reset without page refresh</li>
       </ul>
+      <br/>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Speaker Embedding Dims</td><td>192</td></tr>
+        <tr><td>Similarity Threshold τ</td><td>0.55</td></tr>
+        <tr><td>Dedup Threshold</td><td>0.95 cosine</td></tr>
+        <tr><td>Neo4j Search</td><td>&lt;100ms</td></tr>
+      </table>
     </div>
   </div>
 </section>
